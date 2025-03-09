@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosWebUpgrade", "PedidosWebUpgrade\PedidosWebUpgrade.csproj", "{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {91494B7C-DAAE-4A1A-A878-879656D61D25}
+	EndGlobalSection
+EndGlobal
