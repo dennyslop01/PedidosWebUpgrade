@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosWebUpgrade", "PedidosWebUpgrade\PedidosWebUpgrade.csproj", "{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosWebUpgrade.Web", "PedidosWebUpgrade\PedidosWebUpgrade.Web.csproj", "{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosWebUpgrade.Application", "PedidosWebUpgrade.Application\PedidosWebUpgrade.Application.csproj", "{F96BD9E6-756C-46AF-A035-706CF5BE43E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosWebUpgrade.Domain", "PedidosWebUpgrade.Domain\PedidosWebUpgrade.Domain.csproj", "{64D1FB6E-BC28-4B5F-82F2-6BEE1458B5BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PedidosWebUpgrade.Infrastructure", "PedidosWebUpgrade.Infrastructure\PedidosWebUpgrade.Infrastructure.csproj", "{92CFF5A8-22C3-4965-B2D1-0EAFAC86AF00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7606BDA8-A5D7-4023-AC45-51B7BA8AC6B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F96BD9E6-756C-46AF-A035-706CF5BE43E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F96BD9E6-756C-46AF-A035-706CF5BE43E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F96BD9E6-756C-46AF-A035-706CF5BE43E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F96BD9E6-756C-46AF-A035-706CF5BE43E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64D1FB6E-BC28-4B5F-82F2-6BEE1458B5BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64D1FB6E-BC28-4B5F-82F2-6BEE1458B5BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64D1FB6E-BC28-4B5F-82F2-6BEE1458B5BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64D1FB6E-BC28-4B5F-82F2-6BEE1458B5BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92CFF5A8-22C3-4965-B2D1-0EAFAC86AF00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92CFF5A8-22C3-4965-B2D1-0EAFAC86AF00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92CFF5A8-22C3-4965-B2D1-0EAFAC86AF00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92CFF5A8-22C3-4965-B2D1-0EAFAC86AF00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
