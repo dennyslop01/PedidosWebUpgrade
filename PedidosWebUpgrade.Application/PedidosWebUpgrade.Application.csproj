@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PedidosWebUpgrade.Domain\PedidosWebUpgrade.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
