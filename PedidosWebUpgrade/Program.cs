@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PedidosWebUpgrade.Application.Common.Interfaces;
 using PedidosWebUpgrade.Infrastructure.Repository;
@@ -18,8 +17,16 @@ builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<ICobranzaRepository, CobranzaRepository>();
 builder.Services.AddScoped<IConfiguracionRepository, ConfiguracionRepository>();
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IListaPreciosRepository, ListaPreciosRepository>();
+builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IPerfilRepository, PerfilRepository>();
+builder.Services.AddScoped<IPreferenciaClientePaisRepository, PreferenciaClientePaisRepository>();
+builder.Services.AddScoped<IPreferenciaItemDestinoRepository, PreferenciaItemDestinoRepository>();
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
 
 
 var app = builder.Build();
