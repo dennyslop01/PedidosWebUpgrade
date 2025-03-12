@@ -12,8 +12,8 @@ namespace PedidosWebUpgrade.Domain.ViewModels
 
         public ListaPreciosViewModel()
         {
-            this.ListCabListPrecios = new List<F45520>();
-            this.ListDetListPrecios = new List<F45521>();
+            this.ListCabListPrecios = [];
+            this.ListDetListPrecios = [];
             this.CabListPrecios = new F45520();
             this.DetListPrecios = new F45521();
         }

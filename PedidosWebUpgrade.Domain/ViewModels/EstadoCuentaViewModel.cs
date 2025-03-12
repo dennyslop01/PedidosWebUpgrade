@@ -9,8 +9,8 @@ namespace PedidosWebUpgrade.Domain.ViewModels
 {
     public class EstadoCuentaViewModel
     {
-        public List<ListaGeneral> Clientes { get; set; } = new List<ListaGeneral>();
-        public List<EstadoCuenta> Movimientos { get; set; } = new List<EstadoCuenta>();
+        public List<ListaGeneral> Clientes { get; set; } = [];
+        public List<EstadoCuenta> Movimientos { get; set; } = [];
         public string? CodigoCliente { get; set; }
     }
 }

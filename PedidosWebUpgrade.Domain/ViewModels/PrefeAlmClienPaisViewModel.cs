@@ -13,10 +13,10 @@ namespace PedidosWebUpgrade.Domain.ViewModels
 
         public PrefeAlmClienPaisViewModel()
         {
-            this.ListaPaises = new List<ListaGeneral>();
-            this.ListaClientes = new List<ListaGeneral>();
-            this.ListaAlmacenes = new List<ListaGeneral>();
-            this.PrefAlmClientPaisList = new List<PreferenciaAlmacenClientePais>();
+            this.ListaPaises = [];
+            this.ListaClientes = [];
+            this.ListaAlmacenes = [];
+            this.PrefAlmClientPaisList = [];
         }
 
         public List<PreferenciaAlmacenClientePais> PrefAlmClientPaisList { get; set; }

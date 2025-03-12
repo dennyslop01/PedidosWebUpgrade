@@ -6,8 +6,8 @@ namespace PedidosWebUpgrade.Domain.Entities
     {
         public Almacen()
         {
-            this.ListaOrdenProdupcion = new List<ListaGeneral>();
-            this.ListProforma = new List<ListaGeneral>();
+            this.ListaOrdenProdupcion = [];
+            this.ListProforma = [];
         }
 
         public int Id { get; set; }

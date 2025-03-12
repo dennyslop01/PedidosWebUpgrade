@@ -14,6 +14,12 @@ builder.Services.AddSingleton(es => es.GetRequiredService<IOptions<ConfigVariabl
 
 builder.Services.AddScoped<IAlmacenRepository, AlmacenRepository>();
 builder.Services.AddScoped<ICestaRepository, CestaRepository>();
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<ICobranzaRepository, CobranzaRepository>();
+builder.Services.AddScoped<IConfiguracionRepository, ConfiguracionRepository>();
+builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
 
 var app = builder.Build();

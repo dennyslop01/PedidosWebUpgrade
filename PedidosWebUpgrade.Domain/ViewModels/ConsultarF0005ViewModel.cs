@@ -10,7 +10,7 @@ namespace PedidosWebUpgrade.Domain.ViewModels
 {
     public class ConsultarF0005ViewModel
     {
-        public List<F0005> ListF0005 = new List<F0005>();
+        public List<F0005> ListF0005 = [];
 
         [Display(Name = "Código de producto:")]
         public string CodigoProducto { get; set; } = string.Empty;
@@ -18,8 +18,8 @@ namespace PedidosWebUpgrade.Domain.ViewModels
         [Display(Name = "Código definido por el usuario:")]
         public string CodigoUsuario { get; set; } = string.Empty;
 
-        public List<ListaGeneral> Productos { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Productos { get; set; } = [];
 
-        public List<ListaGeneral> CodigoUsuarios { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> CodigoUsuarios { get; set; } = [];
     }
 }

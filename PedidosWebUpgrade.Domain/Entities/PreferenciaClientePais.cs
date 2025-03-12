@@ -6,15 +6,15 @@ namespace PedidosWebUpgrade.Domain.Entities
     {
         public PreferenciaClientePais()
         {
-            this.Paises = new List<ListaGeneral>();
-            this.Clientes = new List<ListaGeneral>();
+            this.Paises = [];
+            this.Clientes = [];
         }
 
         [Display(Name = "Paises:")]
-        public List<ListaGeneral> Paises { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Paises { get; set; } = [];
 
         [Display(Name = "Clientes:")]
-        public List<ListaGeneral> Clientes { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Clientes { get; set; } = [];
 
         [Required]
         public string? CodPais { get; set; }

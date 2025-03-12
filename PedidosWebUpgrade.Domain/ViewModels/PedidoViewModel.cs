@@ -10,12 +10,12 @@ namespace PedidosWebUpgrade.Domain.Entities
 {
     public class PedidoViewModel
     {
-        public List<ListaGeneral> Sucursales { get; set; } = new List<ListaGeneral>();
-        public List<ListaGeneral> Clientes { get; set; } = new List<ListaGeneral>();
-        public List<ListaGeneral> ShipTo { get; set; } = new List<ListaGeneral>();
-        public List<ListaGeneral> Categorias { get; set; } = new List<ListaGeneral>();
-        public List<ListaGeneral> CabecListaPrecios { get; set; } = new List<ListaGeneral>();
-        public List<Producto> Productos { get; set; } = new List<Producto>();
+        public List<ListaGeneral> Sucursales { get; set; } = [];
+        public List<ListaGeneral> Clientes { get; set; } = [];
+        public List<ListaGeneral> ShipTo { get; set; } = [];
+        public List<ListaGeneral> Categorias { get; set; } = [];
+        public List<ListaGeneral> CabecListaPrecios { get; set; } = [];
+        public List<Producto> Productos { get; set; } = [];
         public EncabezadoPedido Encabezado { get; set; } = new EncabezadoPedido();
         public string CodigoCliente { get; set; } = string.Empty;
         public string CodigoShipTo { get; set; } = string.Empty;
@@ -40,7 +40,7 @@ namespace PedidosWebUpgrade.Domain.Entities
     {
 
         [Display(Name = "Código del motivo:")]
-        public List<ListaGeneral> Motivos { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Motivos { get; set; } = [];
         public string? IdMotivo { get; set; }
 
     }

@@ -65,13 +65,13 @@ namespace PedidosWebUpgrade.Domain.Entities
         [Display(Name = "Tipo de usuario:")]
         public string? TipoUsuario { get; set; }
 
-        public List<ListaGeneral> Sexos = new List<ListaGeneral>();
+        public List<ListaGeneral> Sexos = [];
 
-        public List<ListaGeneral> Estatus = new List<ListaGeneral>();
+        public List<ListaGeneral> Estatus = [];
 
-        public List<PerfilUsuario> Perfiles { get; set; } = new List<PerfilUsuario>();
+        public List<PerfilUsuario> Perfiles { get; set; } = [];
 
-        public List<ListaGeneral> TiposUsuarios { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> TiposUsuarios { get; set; } = [];
 
         //[Required(ErrorMessage = "Campo requerido!")]
         [StringLength(50, ErrorMessage = "Debe contener al menos 8 caracteres.", MinimumLength = 8)]
@@ -94,13 +94,13 @@ namespace PedidosWebUpgrade.Domain.Entities
         /// </summary>
         public Usuario()
         {
-            Sexos = new List<ListaGeneral>() { new ListaGeneral { Codigo = "M", Descripcion = "Masculino" },
+            Sexos = [ new ListaGeneral { Codigo = "M", Descripcion = "Masculino" },
                                                new ListaGeneral { Codigo = "F", Descripcion = "Femenino" }
-                                            };
+                                            ];
 
-            Estatus = new List<ListaGeneral>() { new ListaGeneral { IdTipo = 0, Descripcion = "Inactivo" },
+            Estatus = [ new ListaGeneral { IdTipo = 0, Descripcion = "Inactivo" },
                                                new ListaGeneral { IdTipo = 1, Descripcion = "Activo" }
-                                            };
+                                            ];
 
         }
     }

@@ -18,7 +18,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         {
             CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory, "AlmacenController", "HttpPost-Listar", "e.ToString()", string.Empty, string.Empty);
 
-            List<Almacen> Modelo = new List<Almacen>();
+            List<Almacen> Modelo = [];
             try
             {
                 Modelo = new AlmacenRepository(_configVariables).ConsultarAlmacenes(0);

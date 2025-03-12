@@ -23,6 +23,6 @@ namespace PedidosWebUpgrade.Domain.Entities
         [Display(Name = "Dias de Travesia:")]
         public int DiasTravesia { get; set; }
 
-        public List<ListaGeneral> Paises { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Paises { get; set; } = [];
     }
 }

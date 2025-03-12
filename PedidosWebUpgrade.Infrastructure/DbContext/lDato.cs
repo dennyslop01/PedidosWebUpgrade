@@ -25,9 +25,9 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         #region "-- METODOS GENERALES --"
         public void InstanciarAtributos()
         {
-            ParametrosSql = new List<System.Data.SqlClient.SqlParameter>();
-            Parametros = new Dictionary<string, object>();
-            Esquema = new Dictionary<string, string>();
+            ParametrosSql = [];
+            Parametros = [];
+            Esquema = [];
         }
 
         public SqlParameter ParametroInput(string _nombre, object _valor)
@@ -72,25 +72,6 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         public lDato(ConfigVariables configVariables) : base(configVariables)
         {
             _configVariables = configVariables;
-            InstanciarAtributos();
-        }
-
-        /// <summary>
-        /// Crea acceso a datos según cadena de conexión definida
-        /// </summary>
-        /// <param name="stringConnection"></param>
-        public lDato(string stringConnection) : base(stringConnection)
-        {
-            InstanciarAtributos();
-        }
-
-        /// <summary>
-        /// Crea acceso a datos según cadena de conexión definida y tiempo de conexión definido
-        /// </summary>
-        /// <param name="stringConnection">cadenas de conexión</param>
-        /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
-        public lDato(string stringConnection, int timeout) : base(stringConnection, timeout)
-        {
             InstanciarAtributos();
         }
         #endregion
@@ -268,7 +249,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         {
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
 
-            resultado.Valor = new Dictionary<string, object>();
+            resultado.Valor = [];
 
             try
             {
@@ -415,7 +396,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         ///
         public DataResponse<List<T>> EjecutarReader<T>(T entidad, string nombreProcedimiento, Dictionary<string, string> esquema, int timeout = 30)
         {
-            List<T> items = new List<T>();
+            List<T> items = [];
             DataResponse<List<T>> resultado = new DataResponse<List<T>>();
 
             try
@@ -479,7 +460,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         public DataResponse<List<T>> EjecutarReader<T>(T entidad, string nombreProcedimiento, Dictionary<string, object> parametros, Dictionary<string, string> esquema, int timeout = 30)
         {
-            List<T> items = new List<T>();
+            List<T> items = [];
             DataResponse<List<T>> resultado = new DataResponse<List<T>>();
 
             try
@@ -552,7 +533,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         public DataResponse<List<T>> EjecutarReader<T>(T entidad, string nombreProcedimiento, List<SqlParameter> parametros, Dictionary<string, string> esquema, int timeout = 30)
         {
-            List<T> items = new List<T>();
+            List<T> items = [];
             DataResponse<List<T>> resultado = new DataResponse<List<T>>();
 
             try
@@ -624,7 +605,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         public DataResponse<Dictionary<string, object>> EjecutarReaderDictionary(string nombreProcedimiento, List<string> esquema, int timeout = 30)
         {
-            Dictionary<string, object> items = new Dictionary<string, object>();
+            Dictionary<string, object> items = [];
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
 
             try
@@ -689,7 +670,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         public DataResponse<Dictionary<string, object>> EjecutarReaderDictionary(string nombreProcedimiento, Dictionary<string, object> parametros, List<string> esquema, int timeout = 30)
         {
-            Dictionary<string, object> items = new Dictionary<string, object>();
+            Dictionary<string, object> items = [];
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
 
             try
@@ -761,7 +742,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         public DataResponse<Dictionary<string, object>> EjecutarReaderDictionary(string nombreProcedimiento, List<SqlParameter> parametros, List<string> esquema, int timeout = 30)
         {
-            Dictionary<string, object> items = new Dictionary<string, object>();
+            Dictionary<string, object> items = [];
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
 
             try

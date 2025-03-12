@@ -24,12 +24,12 @@ namespace PedidosWebUpgrade.Domain.Entities
         [Required]
         public string? Destinatarios { get; set; }
 
-        public List<ListaGeneral> Estados = new List<ListaGeneral>();
+        public List<ListaGeneral> Estados = [];
 
         public Sistema()
         {
-            Estados = new List<ListaGeneral>() { new ListaGeneral { Codigo = "A", Descripcion = "Activo" },
-                                               new ListaGeneral { Codigo = "I", Descripcion = "Inactivo" } };
+            Estados = [ new ListaGeneral { Codigo = "A", Descripcion = "Activo" },
+                                               new ListaGeneral { Codigo = "I", Descripcion = "Inactivo" } ];
         }
     }
 }

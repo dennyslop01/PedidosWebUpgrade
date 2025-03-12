@@ -19,7 +19,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         public List<ListaGeneral> ObtenerCondiciones()
         {
             lDato _ldato = new lDato(_configVariables);
-            List<ListaGeneral> _Categorias = new List<ListaGeneral>();
+            List<ListaGeneral> _Categorias = [];
             DataResponse<List<ListaGeneral>> List_Response = new DataResponse<List<ListaGeneral>>();
             try
             {
@@ -36,7 +36,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _Categorias;
         }
@@ -48,7 +48,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         public List<ListaGeneral> ObtenerPorcentajes()
         {
             lDato _ldato = new lDato(_configVariables);
-            List<ListaGeneral> _Categorias = new List<ListaGeneral>();
+            List<ListaGeneral> _Categorias = [];
             DataResponse<List<ListaGeneral>> List_Response = new DataResponse<List<ListaGeneral>>();
             try
             {
@@ -65,7 +65,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _Categorias;
         }
@@ -77,7 +77,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         public List<Producto> ObtenerProductosCesta(int IdOrden, string CodigoCliente, string IdListaPrecio)
         {
             lDato _ldato = new lDato(_configVariables);
-            List<Producto> _Productos = new List<Producto>();
+            List<Producto> _Productos = [];
             DataResponse<List<Producto>> List_Response = new DataResponse<List<Producto>>();
             try
             {
@@ -103,7 +103,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _Productos;
         }
@@ -112,7 +112,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         public List<Producto> ObtenerProductosCestaSeleccionados(int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
-            List<Producto> _Productos = new List<Producto>();
+            List<Producto> _Productos = [];
             DataResponse<List<Producto>> List_Response = new DataResponse<List<Producto>>();
             try
             {
@@ -135,7 +135,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _Productos;
         }
@@ -207,7 +207,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         public List<ListaGeneral> ObtenerF0005(string drsy, string drrt)
         {
             lDato _ldato = new lDato(_configVariables);
-            List<ListaGeneral> _ListF0005 = new List<ListaGeneral>();
+            List<ListaGeneral> _ListF0005 = [];
             DataResponse<List<ListaGeneral>> List_Response = new DataResponse<List<ListaGeneral>>();
             try
             {
@@ -226,7 +226,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _ListF0005;
         }
@@ -234,7 +234,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         public List<FechasEstimadas> ObtenerFechasEstimadas(int IdOorder)
         {
             lDato _ldato = new lDato(_configVariables);
-            List<FechasEstimadas> _ListFechasEstimadas = new List<FechasEstimadas>();
+            List<FechasEstimadas> _ListFechasEstimadas = [];
             DataResponse<List<FechasEstimadas>> List_Response = new DataResponse<List<FechasEstimadas>>();
             try
             {
@@ -255,7 +255,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _ListFechasEstimadas;
         }

@@ -10,7 +10,7 @@ namespace PedidosWebUpgrade.Domain.ViewModels
     public class SeguimientoViewModel
     {
         public string? IdOrden { get; set; }
-        public List<EstatusOrden> EstatusOrden { get; set; } = new List<EstatusOrden>();
-        public List<SeguimientoOrden> SeguimientoOrden { get; set; } = new List<SeguimientoOrden>();
+        public List<EstatusOrden> EstatusOrden { get; set; } = [];
+        public List<SeguimientoOrden> SeguimientoOrden { get; set; } = [];
     }
 }

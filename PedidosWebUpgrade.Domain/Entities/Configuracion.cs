@@ -1,6 +1,6 @@
 ﻿namespace PedidosWebUpgrade.Domain.Entities
 {
-    class Configuracion
+    public class Configuracion
     {
         public string? Codigo { get; set; }
         public string? Descripcion { get; set; }

@@ -30,6 +30,6 @@ namespace PedidosWebUpgrade.Domain.Entities
             }
 
         }
-        public List<PerfilMenu> OpcionesMenu { get; set; } = new List<PerfilMenu>();
+        public List<PerfilMenu> OpcionesMenu { get; set; } = [];
     }
 }

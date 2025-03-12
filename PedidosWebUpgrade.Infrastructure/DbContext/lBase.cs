@@ -18,51 +18,6 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         {
             _configVariables = configVariables;
             stringConnection = _configVariables.ConnectionString;
-
-            //if (ConfigurationManager.ConnectionStrings.Count > 0)
-            //{
-            //    stringConnection = ConfigurationManager.ConnectionStrings["Principal"].ConnectionString;
-            //}
-        }
-
-        public lBase(int timeout)
-        {
-            ConnectionTimeout = timeout;
-
-            //if (ConfigurationManager.ConnectionStrings.Count > 0)
-            //{
-            //    this.stringConnection = ConfigurationManager.ConnectionStrings["Principal"].ConnectionString;
-            //}
-        }
-
-        public lBase(string stringConnection)
-        {
-            //if (ConfigurationManager.ConnectionStrings.Count > 0)
-            //{
-            //    this.stringConnection = ConfigurationManager.ConnectionStrings[stringConnection].ConnectionString;
-            //}
-
-            if (string.IsNullOrEmpty(this.stringConnection))
-            {
-                this.stringConnection = stringConnection;
-            }
-
-        }
-
-        public lBase(string stringConnection, int timeout)
-        {
-            ConnectionTimeout = timeout;
-
-            //if (ConfigurationManager.ConnectionStrings.Count > 0)
-            //{
-            //    this.stringConnection = ConfigurationManager.ConnectionStrings[stringConnection].ConnectionString;
-            //}
-
-            if (string.IsNullOrEmpty(this.stringConnection))
-            {
-                this.stringConnection = stringConnection;
-            }
-
         }
         #endregion
 

@@ -11,23 +11,23 @@ namespace PedidosWebUpgrade.Domain.Entities
     {
         public CestaViewModel()
         {
-            this.ShipTo = new List<ListaGeneral>();
-            this.CabecListaPrecios = new List<ListaGeneral>();
-            this.CondicionesDePago = new List<ListaGeneral>();
-            this.PaisesFacturacion = new List<ListaGeneral>();
-            this.AnnosCorrelativos = new List<ListaGeneral>();
+            this.ShipTo = [];
+            this.CabecListaPrecios = [];
+            this.CondicionesDePago = [];
+            this.PaisesFacturacion = [];
+            this.AnnosCorrelativos = [];
         }
         public EncabezadoPedido Encabezado { get; set; } = new EncabezadoPedido();
         public string? NombreCliente { get; set; }
-        public List<ListaGeneral> Condicion { get; set; } = new List<ListaGeneral>();
-        public List<ListaGeneral> Descuento { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Condicion { get; set; } = [];
+        public List<ListaGeneral> Descuento { get; set; } = [];
         public string? FechaPedido { get; set; }
         public string? FechaCorte { get; set; }
         public string? FechaRequerida { get; set; }
         public string? FechaEstimadaDespachoETD { get; set; }
         public string? FechaEstimadaLlegadaETA { get; set; }
         public string? Observaciones { get; set; }
-        public List<Producto> Productos { get; set; } = new List<Producto>();
+        public List<Producto> Productos { get; set; } = [];
         public string? CodigoCondicion { get; set; }
         public int CodigoDescuento { get; set; }
         public string? CodigoCliente { get; set; }
@@ -35,32 +35,32 @@ namespace PedidosWebUpgrade.Domain.Entities
 
         public string? TasaNegociacion { get; set; }
 
-        public List<ListaGeneral> Carriers { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Carriers { get; set; } = [];
         public string? CodigoCarrier { get; set; }
 
-        public List<ListaGeneral> PuertosDescargas { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> PuertosDescargas { get; set; } = [];
         public string? CodigoPuerto { get; set; }
 
-        public List<ListaGeneral> IncosTerms { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> IncosTerms { get; set; } = [];
         public string? CodigoIncoTerms { get; set; }
 
 
-        public List<ListaGeneral> Referencias01 { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Referencias01 { get; set; } = [];
         public string? CodigoReferencia01 { get; set; }
 
-        public List<ListaGeneral> ForwardingAgents { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> ForwardingAgents { get; set; } = [];
         public string? CodigoForwardingAgent { get; set; }
 
-        public List<ListaGeneral> Almacenes { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> Almacenes { get; set; } = [];
         public string? Codigoalmacent { get; set; }
 
-        public List<ListaGeneral> CondicionesDePago { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> CondicionesDePago { get; set; } = [];
         public string? CodigoCondicionPago { get; set; }
 
-        public List<ListaGeneral> PaisesFacturacion { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> PaisesFacturacion { get; set; } = [];
         public string? CodigoPaisFacturacion { get; set; }
 
-        public List<ListaGeneral> AnnosCorrelativos { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> AnnosCorrelativos { get; set; } = [];
         public int CodigoAnnocorrelativo { get; set; }
 
         public string? TiempoLlegada { get; set; }
@@ -71,7 +71,7 @@ namespace PedidosWebUpgrade.Domain.Entities
 
         public Orders Pedido { get; set; } = new Orders();
 
-        public List<ListaGeneral> ModalidadTransporte { get; set; } = new List<ListaGeneral>();
+        public List<ListaGeneral> ModalidadTransporte { get; set; } = [];
         public string? CodigoModTransportte { get; set; }
 
 

@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using PedidosWebUpgrade.Application.Common.Interfaces;
+﻿using PedidosWebUpgrade.Application.Common.Interfaces;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.DbContext;
 using PedidosWebUpgrade.Infrastructure.Utilities;
@@ -23,7 +21,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             lDato _ldato = new lDato(_configVariables);
             try
             {
-                List<SqlParameter> _parametros = new List<SqlParameter> {
+                List<SqlParameter> _parametros = [
                                                                           new SqlParameter() {ParameterName = "@ID",  Value =  _Almacen.Id, SqlDbType = SqlDbType.Int},
                                                                           new SqlParameter() {ParameterName = "@IDALMACEN",  Value =  _Almacen.IdAlmacen, SqlDbType = SqlDbType.VarChar, Size = 50},
                                                                           new SqlParameter() {ParameterName = "@DESCRIPCION",  Value =  _Almacen.Descripcion ?? Convert.DBNull, SqlDbType = SqlDbType.VarChar, Size = 500},
@@ -31,7 +29,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@IDVENDEDORORDEN",  Value =  _Almacen.IdVendedorOrden, SqlDbType = SqlDbType.Int},
                                                                           new SqlParameter() {ParameterName = "@IDVENDEDORPROFORMA",  Value =  _Almacen.IdVendedorProforma, SqlDbType = SqlDbType.Int},
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.SmallInt},
-                                                                         };
+                                                                         ];
                 _ldato.ParametrosSql = _parametros;
                 var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_CREARALMACEN", _ldato.ParametrosSql);
                 return resultado.Valor;
@@ -43,14 +41,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             ;
         }
         public List<Almacen> ConsultarAlmacenes(int Id)
         {
             lDato _ldato = new lDato(_configVariables);
-            List<Almacen> _Almacen = new List<Almacen>();
+            List<Almacen> _Almacen = [];
             DataResponse<List<Almacen>> List_Response = new DataResponse<List<Almacen>>();
             try
             {
@@ -74,7 +72,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             finally
             {
-                _ldato = null;
+                _ldato.Dispose();;
             }
             return _Almacen;
         }

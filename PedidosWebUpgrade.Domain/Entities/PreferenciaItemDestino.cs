@@ -6,8 +6,8 @@ namespace PedidosWebUpgrade.Domain.Entities
     {
         public PreferenciaItemDestino()
         {
-            this.ListaPaises = new List<ListaGeneral>();
-            this.ListaProductos = new List<ListaGeneral>();
+            this.ListaPaises = [];
+            this.ListaProductos = [];
         }
 
         [Required]

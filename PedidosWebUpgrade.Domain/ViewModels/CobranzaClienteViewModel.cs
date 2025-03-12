@@ -11,7 +11,7 @@ namespace PedidosWebUpgrade.Domain.ViewModels
     {
         public string? IdCliente { get; set; }
         public string? Cliente { get; set; }
-        public List<EstadoCuenta> Movimientos { get; set; } = new List<EstadoCuenta>();
+        public List<EstadoCuenta> Movimientos { get; set; } = [];
         public Pago PagoCliente { get; set; } = new Pago();
         public double MontoAsignar { get; set; } = 0;
     }
