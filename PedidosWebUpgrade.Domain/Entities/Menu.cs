@@ -29,7 +29,7 @@ namespace PedidosWebUpgrade.Domain.Entities
         [Display(Name = "Visible:")]
         public bool Visible { get; set; }
 
-        public List<ListaGeneral> Padres { get; set; }
+        public List<ListaGeneral>? Padres { get; set; }
 
         public string? DescripcionActivo
         {

@@ -3,7 +3,7 @@
     public class F45521
     {
         public decimal Pddoco { get; set; }
-        public string Pddcto { get; set; }
+        public string? Pddcto { get; set; }
         public decimal Pdlnid { get; set; }
         public DateTime Pdeftj { get; set; }
         public string? Pdmcu { get; set; }

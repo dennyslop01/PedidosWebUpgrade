@@ -13,6 +13,7 @@ builder.Services.Configure<ConfigVariables>(builder.Configuration.GetSection("Pr
 builder.Services.AddSingleton(es => es.GetRequiredService<IOptions<ConfigVariables>>().Value);
 
 builder.Services.AddScoped<IAlmacenRepository, AlmacenRepository>();
+builder.Services.AddScoped<ICestaRepository, CestaRepository>();
 
 
 var app = builder.Build();
