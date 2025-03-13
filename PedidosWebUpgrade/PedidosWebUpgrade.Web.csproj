@@ -7,11 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\CobranzaController.cs" />
+    <Compile Remove="Controllers\ConfiguracionController.cs" />
+    <Compile Remove="Controllers\ListaPreciosController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.13" />
+    <PackageReference Include="Shyjus.BrowserDetector" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
