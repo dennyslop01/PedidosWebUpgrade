@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\CobranzaController.cs" />
-    <Compile Remove="Controllers\ConfiguracionController.cs" />
     <Compile Remove="Controllers\ListaPreciosController.cs" />
   </ItemGroup>
 
