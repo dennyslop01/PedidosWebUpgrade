@@ -1,0 +1,45 @@
+﻿@model List<PedidosWebUpgrade.Domain.Entities.Menu>
+
+
+<ul class="nav nav-main">
+    @foreach (var parentMenu in Model.Where(p => p.IdPadre == 0).OrderBy(x => x.Orden))
+    {
+
+        if (!string.IsNullOrEmpty(parentMenu.Url))
+        {
+
+            string _url = parentMenu.Url + "?IdOp=" + parentMenu.IdMenu;
+
+
+            <li class="nav-active">
+                <a href="@Url.Content(parentMenu.Url)">
+                    <i class="fa @parentMenu.Icon" aria-hidden="true"></i>
+                    <span>@parentMenu.Descripcion</span>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-parent">
+                <a>
+                    <i class="fa @parentMenu.Icon" aria-hidden="true"></i>
+                    <span>@parentMenu.Descripcion</span>
+                </a>
+
+                @if (Model.Count(p => p.IdPadre == parentMenu.IdMenu) > 0)
+                {
+                    <ul class="nav nav-children">
+                        @foreach (var childMenu in Model.Where(p => p.IdPadre == parentMenu.IdMenu).OrderBy(x => x.Orden))
+                        {
+                            <li>
+                                <a href="@Url.Content(childMenu.Url)">
+                                    @childMenu.Descripcion
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    }
+</ul>

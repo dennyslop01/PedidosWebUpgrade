@@ -18,7 +18,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public ActionResult Detalle(int IdOrden, string IdCli, string IdSuc, string IdCat, int back = 0, int TipoPedido = 1)
+        public IActionResult Detalle(int IdOrden, string IdCli, string IdSuc, string IdCat, int back = 0, int TipoPedido = 1)
         {
             CestaViewModel Modelo = new CestaViewModel();
             try

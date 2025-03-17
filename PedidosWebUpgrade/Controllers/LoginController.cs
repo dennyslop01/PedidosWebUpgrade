@@ -18,7 +18,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public ActionResult IniciarSesion()
+        public IActionResult IniciarSesion()
         {
             //CONSULTAR DATOS DE LA EMPRESA
             HttpContext.Session.SetString("empresa", new EmpresaRepository(_configVariables).ObtenerEmpresa().FirstOrDefault().NombreCorto);
@@ -27,7 +27,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public ActionResult IniciarSesion(UsuarioLogin Model)
+        public IActionResult IniciarSesion(UsuarioLogin Model)
         {
 
             try
@@ -114,7 +114,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         /// </summary>
         /// <returns>View("Login")</returns>
         [HttpGet()]
-        public ActionResult Cerrar()
+        public IActionResult Cerrar()
         {
             HttpContext.Session.Clear();
             Response.Clear();

@@ -33,7 +33,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        public ActionResult Listar()
+        public IActionResult Listar()
         {
             List<Almacen> Modelo = new List<Almacen>();
             try
@@ -70,7 +70,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Detalle(int Id)
+        public IActionResult Detalle(int Id)
         {
             Almacen _Modelo = new Almacen();
             try
@@ -96,7 +96,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Detalle(Almacen Modelo)
+        public IActionResult Detalle(Almacen Modelo)
         {
             int _result = 0;
             string _msj = string.Empty;

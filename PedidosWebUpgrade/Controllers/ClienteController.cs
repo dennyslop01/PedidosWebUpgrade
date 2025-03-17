@@ -18,7 +18,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public ActionResult FacturasPendientes()
+        public IActionResult FacturasPendientes()
         {
             List<Customer> _Clientes = new List<Customer>();
             try

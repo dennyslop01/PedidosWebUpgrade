@@ -26,7 +26,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult Sistema()
+        public IActionResult Sistema()
         {
             Sistema _Modelo = new Sistema();
             try
@@ -51,7 +51,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost]
-        public ActionResult Sistema(Sistema Modelo)
+        public IActionResult Sistema(Sistema Modelo)
         {
             int _result = 0;
             bool _resultemail = false;
@@ -111,7 +111,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult ContadorPedidos()
+        public IActionResult ContadorPedidos()
         {
             List<ContadorPedidosPais> _Modelo = new List<ContadorPedidosPais>();
             try
@@ -134,7 +134,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult ConsultarUnContadorPedido(string CodigoPais, int Anno)
+        public IActionResult ConsultarUnContadorPedido(string CodigoPais, int Anno)
         {
             ContadorPedidosPais _Modelo = new ContadorPedidosPais();
             try
@@ -163,7 +163,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public ActionResult ConsultarUnContadorPedido(ContadorPedidosPais Modelo)
+        public IActionResult ConsultarUnContadorPedido(ContadorPedidosPais Modelo)
         {
             try
             {
@@ -203,7 +203,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult CopiarContadores()
+        public IActionResult CopiarContadores()
         {
 
             ContadorPedidosPais _Modelo = new ContadorPedidosPais();
@@ -229,7 +229,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public ActionResult CopiarContadores(ContadorPedidosPais Modelo)
+        public IActionResult CopiarContadores(ContadorPedidosPais Modelo)
         {
             try
             {
@@ -276,7 +276,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult ConsultarF0004()
+        public IActionResult ConsultarF0004()
         {
             List<F0004> Modelo = new List<F0004>();
 
@@ -303,7 +303,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult DetalleF0004(string dtsy, string dtrt)
+        public IActionResult DetalleF0004(string dtsy, string dtrt)
         {
             F0004 _Modelo = new F0004();
             try
@@ -330,7 +330,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public ActionResult DetalleF0004(F0004 Modelo)
+        public IActionResult DetalleF0004(F0004 Modelo)
         {
 
             try
@@ -381,7 +381,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult ConsultarF0005()
+        public IActionResult ConsultarF0005()
         {
             ConsultarF0005ViewModel Modelo = new ConsultarF0005ViewModel();
 
@@ -413,7 +413,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public ActionResult BuscarF0005(string CodigoProducto, string CodigoUsuario)
+        public IActionResult BuscarF0005(string CodigoProducto, string CodigoUsuario)
         {
             List<F0005> _ListF0005 = new List<F0005>();
             string viewContent = string.Empty;
@@ -452,7 +452,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult DetalleF0005(string drsy, string drrt, string drky)
+        public IActionResult DetalleF0005(string drsy, string drrt, string drky)
         {
             F0005 _Modelo = new F0005();
             try
@@ -480,7 +480,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public ActionResult DetalleF0005(F0005 Modelo)
+        public IActionResult DetalleF0005(F0005 Modelo)
         {
             try
             {
@@ -528,7 +528,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult ConsultarPreferenciaAlmacenClientePais()
+        public IActionResult ConsultarPreferenciaAlmacenClientePais()
         {
             PrefeAlmClienPaisViewModel Modelo = new PrefeAlmClienPaisViewModel();
 
@@ -567,7 +567,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult DetallePreferenciaAlmacenClientePais(int IdPreferencia)
+        public IActionResult DetallePreferenciaAlmacenClientePais(int IdPreferencia)
         {
             PrefeAlmClienPaisViewModel Modelo = new PrefeAlmClienPaisViewModel();
             try
@@ -603,7 +603,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public ActionResult DetallePreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
+        public IActionResult DetallePreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
         {
             PrefeAlmClienPaisViewModel _Modelo = new PrefeAlmClienPaisViewModel();
             try
@@ -686,7 +686,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult ConsultarAgentesAduanales()
+        public IActionResult ConsultarAgentesAduanales()
         {
             List<ForwardingAgent> Modelo = new List<ForwardingAgent>();
 
@@ -711,7 +711,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public ActionResult DetalleAgenteAduanal(int AgentId)
+        public IActionResult DetalleAgenteAduanal(int AgentId)
         {
 
             ForwardingAgent _Modelo = new ForwardingAgent();
@@ -738,7 +738,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public ActionResult DetalleAgenteAduanal(ForwardingAgent forwardingAgent)
+        public IActionResult DetalleAgenteAduanal(ForwardingAgent forwardingAgent)
         {
             ForwardingAgent _Modelo = new ForwardingAgent();
             try

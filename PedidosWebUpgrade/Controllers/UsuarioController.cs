@@ -19,7 +19,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public ActionResult Listar()
+        public IActionResult Listar()
         {
             List<Usuario> Modelo = new List<Usuario>();
             try
@@ -56,7 +56,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Detalle(int IdUser)
+        public IActionResult Detalle(int IdUser)
         {
             Usuario _Modelo = new Usuario();
             try
@@ -84,7 +84,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Detalle(Usuario Modelo)
+        public IActionResult Detalle(Usuario Modelo)
         {
             int _IdUsuario = 0;
             int _result = 0;
@@ -159,7 +159,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public ActionResult CargarPerfiles(int IdUsuario)
+        public IActionResult CargarPerfiles(int IdUsuario)
         {
 
             List<Perfil> _Perfiles = new List<Perfil>();
@@ -179,7 +179,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public ActionResult RegistrarPerfiles(string ObjJson)
+        public IActionResult RegistrarPerfiles(string ObjJson)
         {
             bool _result = false;
 

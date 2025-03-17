@@ -25,7 +25,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public ActionResult EstadoCuenta()
+        public IActionResult EstadoCuenta()
         {
             EstadoCuentaViewModel Modelo = new EstadoCuentaViewModel();
 
@@ -72,7 +72,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public ActionResult BuscarMovimientos(string CodCli)
+        public IActionResult BuscarMovimientos(string CodCli)
         {
             List<EstadoCuenta> _Movimientos = new List<EstadoCuenta>();
             string viewContent = string.Empty;
@@ -90,7 +90,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             return Json(new { result = viewContent });
         }
 
-        public ActionResult EnviarEstadoCuenta(string CodCli)
+        public IActionResult EnviarEstadoCuenta(string CodCli)
         {
 
             bool _resultemail = false;
@@ -110,7 +110,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
 
         [HttpGet]
-        public ActionResult CobrarDocumento(string IdCustomer)
+        public IActionResult CobrarDocumento(string IdCustomer)
         {
             CobranzaClienteViewModel _Modelo = new CobranzaClienteViewModel();
             try
@@ -148,7 +148,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult ObtenerTasaCambio(string moneda)
+        public IActionResult ObtenerTasaCambio(string moneda)
         {
             TipoCambio _Modelo = new TipoCambio();
             string _tasacambio = "0";
