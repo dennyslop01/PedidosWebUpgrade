@@ -4,5 +4,7 @@
     {
         public required string ConnectionString { get; init; }
         public required string LogDirectory { get; init; }
+
+        public required string RepoImg { get; init; }
     }
 }
