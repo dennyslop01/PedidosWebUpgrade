@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
@@ -7,6 +8,7 @@ using Shyjus.BrowserDetection;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class MenuController : Controller
     {
         private readonly ConfigVariables _configVariables;

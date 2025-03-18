@@ -6,5 +6,7 @@
         public required string LogDirectory { get; init; }
 
         public required string RepoImg { get; init; }
+
+        public required string PedidosPDF { get; init; }
     }
 }

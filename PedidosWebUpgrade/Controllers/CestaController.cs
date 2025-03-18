@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
@@ -6,6 +7,7 @@ using Shyjus.BrowserDetection;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class CestaController : Controller
     {
         private readonly ConfigVariables _configVariables;

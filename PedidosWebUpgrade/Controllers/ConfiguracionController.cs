@@ -11,6 +11,7 @@ using Shyjus.BrowserDetection;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class ConfiguracionController : Controller
     {
         private readonly ConfigVariables _configVariables;

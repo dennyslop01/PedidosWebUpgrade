@@ -17,7 +17,6 @@ namespace PedidosWebUpgrade.Web.Controllers
         private readonly IBrowserDetector _browserDetector;
         private readonly IWebHostEnvironment _env;
 
-
         public ListaPreciosController(ConfigVariables configVariables, IBrowserDetector browserDetector, IWebHostEnvironment env)
         {
             _configVariables = configVariables;

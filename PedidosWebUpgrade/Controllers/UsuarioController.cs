@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
@@ -7,6 +8,7 @@ using System.Text.Json;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class UsuarioController : Controller
     {
         private readonly ConfigVariables _configVariables;

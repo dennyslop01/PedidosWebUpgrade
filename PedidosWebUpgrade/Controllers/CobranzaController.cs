@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -11,6 +12,7 @@ using Shyjus.BrowserDetection;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class CobranzaController : Controller
     {
         private readonly ConfigVariables _configVariables;

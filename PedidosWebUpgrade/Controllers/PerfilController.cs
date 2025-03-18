@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
@@ -8,6 +9,7 @@ using System.Text.Json;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class PerfilController : Controller
     {
         private readonly ConfigVariables _configVariables;
