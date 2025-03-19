@@ -5,9 +5,11 @@ using PedidosWebUpgrade.Infrastructure.Utilities;
 using System.Collections.Specialized;
 using System.Collections;
 using Shyjus.BrowserDetection;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
+    [Authorize()]
     public class AlmacenController : Controller
     {
         private readonly ConfigVariables _configVariables;

@@ -1,0 +1,45 @@
+﻿@model PedidosWebUpgrade.Domain.Entities.UsuarioLogin
+@{
+    Layout = null;
+}
+
+<form asp-action="IniciarSesion" asp-controller="Login" method="post">
+    <h1 class="h3 mb-3">Login Page</h1>
+    <table>
+        <thead>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <label asp-for="Cuenta" for="exampleInputEmail1" class="form-label"></label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input asp-for="Cuenta" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label asp-for="Clave" for="exampleInputPassword1" class="form-label"></label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input asp-for="Clave" type="password" class="form-control" id="exampleInputPassword1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>    
+</form>

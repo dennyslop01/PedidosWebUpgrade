@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -23,11 +27,18 @@ namespace PedidosWebUpgrade.Web.Controllers
             //CONSULTAR DATOS DE LA EMPRESA
             HttpContext.Session.SetString("empresa", new EmpresaRepository(_configVariables).ObtenerEmpresa().FirstOrDefault().NombreCorto);
 
+            ClaimsPrincipal principal = HttpContext.User;
+            if (principal.Identity != null)
+            {
+                if (principal.Identity.IsAuthenticated)
+                    return RedirectToAction("Index", "Home");
+            }
+
             return View(new UsuarioLogin());
         }
 
         [HttpPost()]
-        public IActionResult IniciarSesion(UsuarioLogin Model)
+        public async Task<IActionResult> IniciarSesion(UsuarioLogin Model)
         {
 
             try
@@ -68,6 +79,19 @@ namespace PedidosWebUpgrade.Web.Controllers
                             ModelState.AddModelError(string.Empty, "Lo Sentimos, ha ocurrido un error!");
                             break;
                         case 1:
+                            List<Claim> c = new List<Claim>()
+                            {
+                                new Claim(ClaimTypes.NameIdentifier, Model.Cuenta)
+                            };
+
+                            ClaimsIdentity ci = new (c, CookieAuthenticationDefaults.AuthenticationScheme);
+                            AuthenticationProperties properties = new AuthenticationProperties();
+                            properties.AllowRefresh = true;
+                            properties.IsPersistent = true;
+                            properties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20);
+
+                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(ci), properties);
+
                             //CREACION VARIABLES DE SESIÓN
                             HttpContext.Session.SetString("idusuario", _idUsuario.ToString());
                             HttpContext.Session.SetString("idvendedor", _Idvendedor.ToString());
@@ -84,7 +108,8 @@ namespace PedidosWebUpgrade.Web.Controllers
                             HttpContext.Session.SetString("empresa", new EmpresaRepository(_configVariables).ObtenerEmpresa().FirstOrDefault().NombreCorto);
 
                             //FormsAuthentication.SetAuthCookie(Model.Cuenta, true);
-                            return RedirectToAction("Inicio", "Principal");
+                            return RedirectToAction("Index", "Home");
+
                         case 2:
                             ModelState.AddModelError(string.Empty, "USUARIO NO EXISTE!");
                             break;
@@ -107,19 +132,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             }
             ;
             return View(Model);
-        }
-
-        /// <summary>
-        /// GET: Cerrar sesión
-        /// </summary>
-        /// <returns>View("Login")</returns>
-        [HttpGet()]
-        public IActionResult Cerrar()
-        {
-            HttpContext.Session.Clear();
-            Response.Clear();
-            //FormsAuthentication.SignOut();
-            return View("IniciarSesion");
         }
     }
 }
