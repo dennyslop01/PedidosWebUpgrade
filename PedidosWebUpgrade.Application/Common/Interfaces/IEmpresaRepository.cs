@@ -9,8 +9,8 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface IEmpresaRepository
     {
-        List<ListaGeneral> ObtenerSucursales(string salesmanid);
+        Task<List<ListaGeneral>> ObtenerSucursales(string salesmanid);
 
-        List<Compannia> ObtenerEmpresa();
+        Task<List<Compannia>> ObtenerEmpresa();
     }
 }

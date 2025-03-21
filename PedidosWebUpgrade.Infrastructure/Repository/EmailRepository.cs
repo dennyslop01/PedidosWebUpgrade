@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public Email ObtenerEmail(int Id)
+        public async Task<Email> ObtenerEmail(int Id)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Email> _Email = [];
@@ -29,7 +29,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Body", "CUERPO");
                 _ldato.Esquema.Add("footer", "COLETILLA_FINAL");
 
-                List_Response = _ldato.EjecutarReader(new Email(), "PED_USP_CONSULTARGESTIONCORREO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Email(), "PED_USP_CONSULTARGESTIONCORREO", _ldato.Parametros, _ldato.Esquema);
                 _Email = List_Response.Valor;
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public Email ObtenerEmailDescuento(int Id)
+        public async Task<Email> ObtenerEmailDescuento(int Id)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Email> _Email = [];
@@ -58,7 +58,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Body", "BODY");
                 _ldato.Esquema.Add("footer", "COLETILLA_FINAL");
 
-                List_Response = _ldato.EjecutarReader(new Email(), "PED_USP_CONSULTARGESTIONDESCUENTO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Email(), "PED_USP_CONSULTARGESTIONDESCUENTO", _ldato.Parametros, _ldato.Esquema);
                 _Email = List_Response.Valor;
             }
             catch (Exception ex)
@@ -74,7 +74,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public bool SendMail(Email EmailModel)
+        public async Task<bool> SendMail(Email EmailModel)
         {
             MailMessage _EmailMessage = new MailMessage();
             try
@@ -107,7 +107,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
                 clienteSmtp.DeliveryMethod = SmtpDeliveryMethod.Network;
 
-                clienteSmtp.Send(_EmailMessage);
+                await clienteSmtp.SendMailAsync(_EmailMessage);
                 return true;
             }
             catch (Exception ex)
@@ -118,27 +118,28 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public bool SendMailSalesmen(int Idpedido, string IdSalesman, string fechapedido, string montototal, int IdUsuario)
+        public async Task<bool> SendMailSalesmen(int Idpedido, string IdSalesman, string fechapedido, string montototal, int IdUsuario)
         {
-            Salesman _Salesman = new Salesman();
+            List<Salesman> _ListSalesman = new List<Salesman>();
             Email EmailModel = new Email();
             bool _result = false;
             try
             {
                 //BUSCAR DATOS DEL SALESMEN
-                _Salesman = new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman).FirstOrDefault();
+                _ListSalesman = await new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman);
+                Salesman _Salesman = _ListSalesman.FirstOrDefault();
 
                 //BUSCAR PARAMETROS DE CONFIGURACION PARA ENVIO DE EMAIL
-                List<Configuracion> _parametros = new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
+                List<Configuracion> _parametros = await new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
 
                 //OBTENER EMAIL
-                EmailModel = ObtenerEmail(1);
+                EmailModel = await ObtenerEmail(1);
                 EmailModel.To = _Salesman.Mail;
                 EmailModel.CopyTo = _Salesman.MailCoordinador;
 
 
                 //CONSULTAR DATOS DEL PEDIDO
-                List<Orders> _Pedido = new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", Idpedido, "", IdUsuario);
+                List<Orders> _Pedido = await new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", Idpedido, "", IdUsuario);
 
                 EmailModel.Subject = EmailModel.Subject.Replace("[PEDIDO]", _Pedido.FirstOrDefault().OrderNumber).
                                                         Replace("[CODCLI]", _Pedido.FirstOrDefault().CustomerId).
@@ -192,7 +193,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 EmailModel.UseSSL = _parametros.Find(x => x.Codigo == "USESSL").Valor;
                 EmailModel.UseAuth = _parametros.Find(x => x.Codigo == "USEAUTH").Valor;
 
-                _result = SendMail(EmailModel);
+                _result = await SendMail(EmailModel);
             }
             catch (Exception ex)
             {
@@ -203,22 +204,24 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public bool SendMailDescuento(int Idpedido, string IdSalesman, dynamic datos, int IdUsuario)
+        public async Task<bool> SendMailDescuento(int Idpedido, string IdSalesman, dynamic datos, int IdUsuario)
         {
-            Salesman _Salesman = new Salesman();
+            List<Salesman> _ListSalesman = new List<Salesman>();
             Email EmailModel = new Email();
             bool _result = false;
             try
             {
 
-                List<Orders> _Pedido = new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", Idpedido, "", IdUsuario);
+                List<Orders> _Pedido = await new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", Idpedido, "", IdUsuario);
 
                 //buscar datos del salesmen
-                _Salesman = new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman).FirstOrDefault();
+                _ListSalesman = await new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman);
+                Salesman _Salesman = _ListSalesman.FirstOrDefault();
+
                 //buscar parametros de configuracion para envio de email
-                List<Configuracion> _parametros = new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
+                List<Configuracion> _parametros = await new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
                 //obtener email de descuento
-                EmailModel = ObtenerEmailDescuento(1);
+                EmailModel = await ObtenerEmailDescuento(1);
                 EmailModel.Subject = EmailModel.Subject.Replace("[PEDIDO]", Idpedido.ToString()).
                                                         Replace("[CODCLI]", _Pedido.FirstOrDefault().CustomerId).
                                                         Replace("[NOMCLI]", _Pedido.FirstOrDefault().Cliente);
@@ -274,7 +277,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 EmailModel.UseSSL = _parametros.Find(x => x.Codigo == "USESSL").Valor;
                 EmailModel.UseAuth = _parametros.Find(x => x.Codigo == "USEAUTH").Valor;
 
-                _result = SendMail(EmailModel);
+                _result = await SendMail(EmailModel);
             }
             catch (Exception ex)
             {
@@ -285,7 +288,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public bool SendMailAdmSistema(string estado, string destinatarios, string usuario)
+        public async Task<bool> SendMailAdmSistema(string estado, string destinatarios, string usuario)
         {
 
             Email EmailModel = new Email();
@@ -295,10 +298,10 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
 
                 //BUSCAR PARAMETROS DE CONFIGURACION PARA ENVIO DE EMAIL
-                List<Configuracion> _parametros = new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
+                List<Configuracion> _parametros = await new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
 
                 //OBTENER EMAIL
-                EmailModel = ObtenerEmail(2);
+                EmailModel = await ObtenerEmail(2);
                 EmailModel.To = destinatarios;
                 EmailModel.Subject = EmailModel.Subject;
                 estado = (estado == "A" ? "ACTIVADO" : "INACTIVADO");
@@ -320,7 +323,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 EmailModel.UseSSL = _parametros.Find(x => x.Codigo == "USESSL").Valor;
                 EmailModel.UseAuth = _parametros.Find(x => x.Codigo == "USEAUTH").Valor;
 
-                _result = SendMail(EmailModel);
+                _result = await SendMail(EmailModel);
             }
             catch (Exception ex)
             {
@@ -331,25 +334,28 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public bool SendMailEstadoCuenta(string IdSalesman, string customerid, List<EstadoCuenta> Movimientos)
+        public async Task<bool> SendMailEstadoCuenta(string IdSalesman, string customerid, List<EstadoCuenta> Movimientos)
         {
             Email EmailModel = new Email();
-            Salesman _Salesman = new Salesman();
-            Customer _Customer = new Customer();
+            List<Salesman> _ListSalesman = new List<Salesman>();
+            List<Customer> _ListCustomer = new List<Customer>();
+
             bool _result = false;
             try
             {
                 //BUSCAR PARAMETROS DE CONFIGURACION PARA ENVIO DE EMAIL
-                List<Configuracion> _parametros = new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
+                List<Configuracion> _parametros = await new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
 
                 //buscar datos del salesmen
-                _Salesman = new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman).FirstOrDefault();
+                _ListSalesman = await new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman);
+                Salesman _Salesman = _ListSalesman.FirstOrDefault();
 
                 //buscar datos del cliente
-                _Customer = new ClienteRepository(_configVariables).ObtenerClientes(IdSalesman, null, 2, customerid).FirstOrDefault();
+                _ListCustomer = await new ClienteRepository(_configVariables).ObtenerClientes(IdSalesman, null, 2, customerid);
+                Customer _Customer = _ListCustomer.FirstOrDefault();
 
                 //OBTENER EL CORREO DE LA TABLA CONFIGURACION
-                EmailModel = ObtenerEmail(3);
+                EmailModel = await ObtenerEmail(3);
 
                 EmailModel.To = _Customer.Email;
 
@@ -388,9 +394,6 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 EmailModel.Body = EmailModel.Body + EmailModel.footer.Replace("[BR]", "<br />");
 
 
-
-
-
                 EmailModel.Host = _parametros.Find(x => x.Codigo == "HOSTMAIL").Valor;
                 EmailModel.Port = int.Parse(_parametros.Find(x => x.Codigo == "PORTHOSTEMAIL").Valor);
                 EmailModel.Login = _parametros.Find(x => x.Codigo == "LOGINMAIL").Valor;
@@ -399,7 +402,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 EmailModel.UseSSL = _parametros.Find(x => x.Codigo == "USESSL").Valor;
                 EmailModel.UseAuth = _parametros.Find(x => x.Codigo == "USEAUTH").Valor;
 
-                _result = SendMail(EmailModel);
+                _result = await SendMail(EmailModel);
 
             }
             catch (Exception ex)
@@ -410,28 +413,29 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _result;
         }
 
-        public bool SendMailLogistica(int Idpedido, string IdSalesman)
+        public async Task<bool> SendMailLogistica(int Idpedido, string IdSalesman)
         {
-            Salesman _Salesman = new Salesman();
+            List<Salesman> _ListSalesman = new List<Salesman>();
             Email EmailModel = new Email();
             bool _result = false;
             try
             {
                 //BUSCAR DATOS DEL SALESMEN
-                _Salesman = new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman).FirstOrDefault();
+                _ListSalesman = await new UsuarioRepository(_configVariables).ObtenerSalesman(IdSalesman);
+                Salesman _Salesman = _ListSalesman.FirstOrDefault();
 
                 //BUSCAR PARAMETROS DE CONFIGURACION PARA ENVIO DE EMAIL
-                List<Configuracion> _parametros = new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
-                List<Configuracion> _maillogistica = new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.notificacion.logistica");
+                List<Configuracion> _parametros = await new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.general.correo");
+                List<Configuracion> _maillogistica = await new ConfiguracionRepository(_configVariables).ObtenerParametros("portal.notificacion.logistica");
 
                 //OBTENER EMAIL
-                EmailModel = ObtenerEmail(1);
+                EmailModel = await ObtenerEmail(1);
                 EmailModel.To = _maillogistica.Find(x => x.Codigo == "EMAIL").Valor;
 
 
 
                 //CONSULTAR DATOS DEL PEDIDO
-                List<Orders> _Pedido = new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", Idpedido, "", 0);
+                List<Orders> _Pedido = await new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", Idpedido, "", 0);
 
                 EmailModel.Subject = EmailModel.Subject.Replace("[PEDIDO]", Idpedido.ToString()).
                                                         Replace("[CODCLI]", _Pedido.FirstOrDefault().CustomerId).
@@ -485,7 +489,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 EmailModel.UseSSL = _parametros.Find(x => x.Codigo == "USESSL").Valor;
                 EmailModel.UseAuth = _parametros.Find(x => x.Codigo == "USEAUTH").Valor;
 
-                _result = SendMail(EmailModel);
+                _result = await SendMail(EmailModel);
             }
             catch (Exception ex)
             {
@@ -496,7 +500,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public bool SendMailAprobarPedido(int IdOrden)
+        public async Task<bool> SendMailAprobarPedido(int IdOrden)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -504,9 +508,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
 
                 _ldato.Parametros.Add("@ORDERID", IdOrden);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ENVIARORDENCORREO", _ldato.Parametros);
-
-
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ENVIARORDENCORREO", _ldato.Parametros);
             }
             catch (Exception ex)
             {

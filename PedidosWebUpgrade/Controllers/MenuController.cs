@@ -21,13 +21,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         //[ChildActionOnly]
-        //public IActionResult MenuPrincipal()
+        //public async Task<IActionResult> MenuPrincipal()
         //{
             
         //}
 
         [HttpGet]
-        public IActionResult Listar()
+        public async Task<IActionResult> Listar()
         {
             List<Menu> Modelo = new List<Menu>();
             try
@@ -54,7 +54,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new MenuRepository(_configVariables).EliminarMenu(IdMenu);
+                _result = new MenuRepository(_configVariables).EliminarMenu(IdMenu).Result;
 
             }
             catch (Exception e)
@@ -65,13 +65,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int IdMenu)
+        public async Task<IActionResult> Detalle(int IdMenu)
         {
             Menu _Modelo = new Menu();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -94,7 +94,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Detalle(Menu Modelo)
+        public async Task<IActionResult> Detalle(Menu Modelo)
         {
             int _IdMenu = 0;
             int _result = 0;

@@ -4,22 +4,22 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface ICestaRepository
     {
-        List<ListaGeneral> ObtenerCondiciones();
+        Task<List<ListaGeneral>> ObtenerCondiciones();
 
-        List<ListaGeneral> ObtenerPorcentajes();
+        Task<List<ListaGeneral>> ObtenerPorcentajes();
 
-        List<Producto> ObtenerProductosCesta(int IdOrden, string CodigoCliente, string IdListaPrecio);
+        Task<List<Producto>> ObtenerProductosCesta(int IdOrden, string CodigoCliente, string IdListaPrecio);
 
-        List<Producto> ObtenerProductosCestaSeleccionados(int IdOrden);
+        Task<List<Producto>> ObtenerProductosCestaSeleccionados(int IdOrden);
 
-        bool VaciarCesta(int IdOrden);
+        Task<bool> VaciarCesta(int IdOrden);
 
-        bool ActualizarCorrelativo(string NroCorrelativo, int IdOrden);
+        Task<bool> ActualizarCorrelativo(string NroCorrelativo, int IdOrden);
 
-        bool EliminarProducto(int IdOrden, string CodProd);
+        Task<bool> EliminarProducto(int IdOrden, string CodProd);
 
-        List<ListaGeneral> ObtenerF0005(string drsy, string drrt);
+        Task<List<ListaGeneral>> ObtenerF0005(string drsy, string drrt);
 
-        List<FechasEstimadas> ObtenerFechasEstimadas(int IdOorder);
+        Task<List<FechasEstimadas>> ObtenerFechasEstimadas(int IdOorder);
     }
 }

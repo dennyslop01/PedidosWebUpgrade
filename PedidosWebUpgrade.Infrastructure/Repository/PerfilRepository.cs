@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
         
-        public List<Perfil> ObtenerPerfil(int IdPerfil)
+        public async Task<List<Perfil>> ObtenerPerfil(int IdPerfil)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Perfil> _Perfil = new List<Perfil>();
@@ -29,7 +29,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
                 _ldato.Esquema.Add("Activo", "ACTIVO");
 
-                List_Response = _ldato.EjecutarReader(new Perfil(), "CON_USP_CONSULTARPERFIL", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Perfil(), "CON_USP_CONSULTARPERFIL", _ldato.Parametros, _ldato.Esquema);
                 _Perfil = List_Response.Valor;
             }
             catch (Exception ex)
@@ -44,14 +44,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Perfil;
         }
 
-        public int EliminarPerfil(int IdPerfil)
+        public async Task<int> EliminarPerfil(int IdPerfil)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDPERFIL", IdPerfil);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARPERFIL", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARPERFIL", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public Dictionary<string, object> ActualizarPerfil(Perfil _perfil)
+        public async Task<Dictionary<string, object>> ActualizarPerfil(Perfil _perfil)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -73,7 +73,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.TinyInt},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARPERFIL", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARPERFIL", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<PerfilMenu> ObtenerPerfilMenu(int IdPerfil, int IdMenu)
+        public async Task<List<PerfilMenu>> ObtenerPerfilMenu(int IdPerfil, int IdMenu)
         {
             lDato _ldato = new lDato(_configVariables);
             List<PerfilMenu> _PerfilMenu = new List<PerfilMenu>();
@@ -104,7 +104,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Url", "URL");
 
 
-                List_Response = _ldato.EjecutarReader(new PerfilMenu(), "CON_USP_CONSULTARPERFILMENU", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PerfilMenu(), "CON_USP_CONSULTARPERFILMENU", _ldato.Parametros, _ldato.Esquema);
                 _PerfilMenu = List_Response.Valor;
             }
             catch (Exception ex)
@@ -119,14 +119,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _PerfilMenu;
         }
 
-        public int EliminarPerfilMenu(int IdPerfilMenu)
+        public async Task<int> EliminarPerfilMenu(int IdPerfilMenu)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDPERFILMENU", IdPerfilMenu);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARPERFILMENU", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARPERFILMENU", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public bool IncluirPerfilMenu(PerfilMenu _PerfilMenu)
+        public async Task<bool> IncluirPerfilMenu(PerfilMenu _PerfilMenu)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -143,7 +143,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@IDPERFIL", _PerfilMenu.Idperfil);
                 _ldato.Parametros.Add("@IDMENU", _PerfilMenu.Idmenu);
-                _data = _ldato.EjecutarScalarReader("CON_USP_INCLUIRPERFILMENU", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_INCLUIRPERFILMENU", _ldato.Parametros);
 
             }
             catch (Exception ex)
@@ -159,7 +159,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (bool)_data.Valor;
         }
 
-        public List<PerfilUsuario> ObtenerPerfilUsuario(int IdPerfil, decimal IdUsuario)
+        public async Task<List<PerfilUsuario>> ObtenerPerfilUsuario(int IdPerfil, decimal IdUsuario)
         {
             lDato _ldato = new lDato(_configVariables);
             List<PerfilUsuario> _PerfilUsuario = new List<PerfilUsuario>();
@@ -175,7 +175,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("NombrePerfil", "DESCRIPCION");
 
 
-                List_Response = _ldato.EjecutarReader(new PerfilUsuario(), "CON_USP_CONSULTARPERFILUSUARIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PerfilUsuario(), "CON_USP_CONSULTARPERFILUSUARIO", _ldato.Parametros, _ldato.Esquema);
                 _PerfilUsuario = List_Response.Valor;
             }
             catch (Exception ex)
@@ -190,14 +190,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _PerfilUsuario;
         }
 
-        public int EliminarPerfilUsuario(int IdPerfilUsuario)
+        public async Task<int> EliminarPerfilUsuario(int IdPerfilUsuario)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDPERFILUSUARIO", IdPerfilUsuario);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARPERFILUSUARIO", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARPERFILUSUARIO", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -206,7 +206,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public bool IncluirPerfilUsuario(PerfilUsuario _PerfilUsuario)
+        public async Task<bool> IncluirPerfilUsuario(PerfilUsuario _PerfilUsuario)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -214,7 +214,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@IDPERFIL", _PerfilUsuario.IdPerfil);
                 _ldato.Parametros.Add("@IDUSUARIO", _PerfilUsuario.IdUsuario);
-                _data = _ldato.EjecutarScalarReader("CON_USP_INCLUIRPERFILUSUARIO", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_INCLUIRPERFILUSUARIO", _ldato.Parametros);
 
             }
             catch (Exception ex)
@@ -230,7 +230,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (bool)_data.Valor;
         }
 
-        public int ActualizarMiPerfil(Usuario MiPerfil)
+        public async Task<int> ActualizarMiPerfil(Usuario MiPerfil)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -238,7 +238,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@IDUSUARIO", MiPerfil.IdUsuario);
                 _ldato.Parametros.Add("@CONTRASENA", MiPerfil.ConfirmarPassword);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ACTUALIZARMIPERFIL", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ACTUALIZARMIPERFIL", _ldato.Parametros);
             }
             catch (Exception ex)
             {

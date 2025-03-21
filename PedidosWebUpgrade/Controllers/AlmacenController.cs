@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Collections;
 using Shyjus.BrowserDetection;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -21,12 +22,12 @@ namespace PedidosWebUpgrade.Web.Controllers
             _browserDetector = browserDetector;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             List<Almacen> Modelo = [];
             try
             {
-                Modelo = new AlmacenRepository(_configVariables).ConsultarAlmacenes(0);
+                Modelo = await new AlmacenRepository(_configVariables).ConsultarAlmacenes(0);
             }
             catch (Exception e)
             {
@@ -35,18 +36,18 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        public IActionResult Listar()
+        public async Task<IActionResult> Listar()
         {
             List<Almacen> Modelo = new List<Almacen>();
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Almacen/Listar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Almacen/Listar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = new AlmacenRepository(_configVariables).ConsultarAlmacenes(0);
+                Modelo = await new AlmacenRepository(_configVariables).ConsultarAlmacenes(0);
             }
             catch (Exception e)
             {
@@ -56,12 +57,12 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult EliminarAlmacen(int Id)
+        public async Task<JsonResult> EliminarAlmacen(int Id)
         {
             int _result = 0;
             try
             {
-                _result = new AlmacenRepository(_configVariables).EliminarAlmacen(Id);
+                _result = await new AlmacenRepository(_configVariables).EliminarAlmacen(Id);
 
             }
             catch (Exception e)
@@ -72,12 +73,12 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int Id)
+        public async Task<IActionResult> Detalle(int Id)
         {
             Almacen _Modelo = new Almacen();
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Almacen/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Almacen/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -85,10 +86,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (Id > 0)
                 {
-                    _Modelo = new AlmacenRepository(_configVariables).ConsultarAlmacenes(Id).FirstOrDefault();
+                    List<Almacen> _ListAlmacen = await new AlmacenRepository(_configVariables).ConsultarAlmacenes(Id);
+
+                    _Modelo = _ListAlmacen.FirstOrDefault();
                 }
-                _Modelo.ListaOrdenProdupcion = new VendedorRepository(_configVariables).ConsultarVendedores(0).Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
-                _Modelo.ListProforma = new VendedorRepository(_configVariables).ConsultarVendedores(0).Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
+
+                _Modelo.ListaOrdenProdupcion = new VendedorRepository(_configVariables).ConsultarVendedores(0).Result.Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
+                _Modelo.ListProforma =         new VendedorRepository(_configVariables).ConsultarVendedores(0).Result.Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
             }
             catch (Exception e)
             {
@@ -98,13 +102,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Detalle(Almacen Modelo)
+        public async Task<IActionResult> Detalle(Almacen Modelo)
         {
             int _result = 0;
             string _msj = string.Empty;
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Almacen/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Almacen/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -112,7 +116,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new AlmacenRepository(_configVariables).ActualizarAlmacen(Modelo);
+                    var _resultQuery = await new AlmacenRepository(_configVariables).ActualizarAlmacen(Modelo);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)
@@ -137,8 +141,8 @@ namespace PedidosWebUpgrade.Web.Controllers
                     }
 
                 }
-                Modelo.ListaOrdenProdupcion = new VendedorRepository(_configVariables).ConsultarVendedores(0).Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
-                Modelo.ListProforma = new VendedorRepository(_configVariables).ConsultarVendedores(0).Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
+                Modelo.ListaOrdenProdupcion = new VendedorRepository(_configVariables).ConsultarVendedores(0).Result.Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
+                Modelo.ListProforma = new VendedorRepository(_configVariables).ConsultarVendedores(0).Result.Select(x => new ListaGeneral { Codigo = x.IdVendedor.ToString(), Descripcion = x.Nombre }).ToList();
             }
             catch (Exception e)
             {

@@ -20,18 +20,18 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         // GET: PreferenciaItemDestino
         [HttpGet()]
-        public IActionResult Listar()
+        public async Task<IActionResult> Listar()
         {
             List<PreferenciaItemDestino> Modelo = new List<PreferenciaItemDestino>();
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse((HttpContext.Session.GetString("idusuario").ToString())), "PreferenciaItemDestino/Listar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse((HttpContext.Session.GetString("idusuario").ToString())), "PreferenciaItemDestino/Listar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = new PreferenciaItemDestinoRepository(_configVariables).Listar(0);
+                Modelo = await new PreferenciaItemDestinoRepository(_configVariables).Listar(0);
             }
             catch (Exception e)
             {
@@ -41,12 +41,12 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult Detalle(int IdPreferencia)
+        public async Task<IActionResult> Detalle(int IdPreferencia)
         {
             PreferenciaItemDestino _Modelo = new PreferenciaItemDestino();
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse((HttpContext.Session.GetString("idusuario").ToString())), "PreferenciaItemDestino/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse((HttpContext.Session.GetString("idusuario").ToString())), "PreferenciaItemDestino/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -54,11 +54,15 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (IdPreferencia > 0)
                 {
-                    _Modelo = new PreferenciaItemDestinoRepository(_configVariables).Listar(IdPreferencia).FirstOrDefault();
+                    List<PreferenciaItemDestino> destinos = await new PreferenciaItemDestinoRepository(_configVariables).Listar(IdPreferencia);
+                    _Modelo = destinos.FirstOrDefault();
                 }
 
-                _Modelo.ListaProductos = new ProductoRepository(_configVariables).ObtenerTodoslosProductos(null).Select(x => new ListaGeneral() { Codigo = x.Id, Descripcion = x.Id + " - " + x.Descripcion }).ToList();
-                _Modelo.ListaPaises = new ConfiguracionRepository(_configVariables).ObtenerF0005("00", "CN", null).Select(x => new ListaGeneral() { Codigo = x.drky, Descripcion = x.drky + " - " + x.drdl01 }).ToList();
+                List<Product> products = await new ProductoRepository(_configVariables).ObtenerTodoslosProductos(null);
+                List<F0005> f005 = await new ConfiguracionRepository(_configVariables).ObtenerF0005("00", "CN", null);
+
+                _Modelo.ListaProductos = products.Select(x => new ListaGeneral() { Codigo = x.Id, Descripcion = x.Id + " - " + x.Descripcion }).ToList();
+                _Modelo.ListaPaises = f005.Select(x => new ListaGeneral() { Codigo = x.drky, Descripcion = x.drky + " - " + x.drdl01 }).ToList();
             }
             catch (Exception e)
             {
@@ -69,13 +73,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [HttpPost()]
         [ValidateAntiForgeryToken()]
-        public IActionResult Detalle(PreferenciaItemDestino Modelo)
+        public async Task<IActionResult> Detalle(PreferenciaItemDestino Modelo)
         {
             int _result = 0;
             string _msj = string.Empty;
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse((HttpContext.Session.GetString("idusuario").ToString())), "PreferenciaItemDestino/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse((HttpContext.Session.GetString("idusuario").ToString())), "PreferenciaItemDestino/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -83,7 +87,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new PreferenciaItemDestinoRepository(_configVariables).Actualizar(Modelo);
+                    var _resultQuery = await new PreferenciaItemDestinoRepository(_configVariables).Actualizar(Modelo);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)
@@ -126,7 +130,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             string _msj = string.Empty;
             try
             {
-                var _resultQuery = new PreferenciaItemDestinoRepository(_configVariables).Eliminar(IdPreferencia);
+                var _resultQuery = new PreferenciaItemDestinoRepository(_configVariables).Eliminar(IdPreferencia).Result;
                 foreach (var item in _resultQuery)
                 {
                     switch (item.Key)

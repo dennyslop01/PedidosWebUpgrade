@@ -22,7 +22,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public IActionResult IniciarSesion()
+        public async Task<IActionResult> IniciarSesion()
         {
             //CONSULTAR DATOS DE LA EMPRESA
             HttpContext.Session.SetString("empresa", new EmpresaRepository(_configVariables).ObtenerEmpresa().FirstOrDefault().NombreCorto);
@@ -40,7 +40,6 @@ namespace PedidosWebUpgrade.Web.Controllers
         [HttpPost()]
         public async Task<IActionResult> IniciarSesion(UsuarioLogin Model)
         {
-
             try
             {
                 if (ModelState.IsValid)
@@ -51,7 +50,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                     string _Idvendedor = string.Empty;
 
 
-                    var _resultQuery = new UsuarioRepository(_configVariables).ValidarUsuario(Model.Cuenta.Trim(), Model.Clave.Trim());
+                    var _resultQuery = await new UsuarioRepository(_configVariables).ValidarUsuario(Model.Cuenta.Trim(), Model.Clave.Trim());
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)

@@ -26,7 +26,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         #endregion
 
         #region "-- METODOS --"
-        public string ObtenerStringConnection()
+        public async Task<string> ObtenerStringConnection()
         {
             return stringConnection;
         }
@@ -34,7 +34,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
 
         #region "-- IDisposable SUPPORT --"
         // IDisposable
-        protected virtual void Dispose(bool disposing)
+        protected virtual async void Dispose(bool disposing)
         {
             if (!this.disposedValue)
             {
@@ -50,7 +50,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         }
 
         // This code added by Visual Basic to correctly implement the disposable pattern.
-        public void Dispose()
+        public async void Dispose()
         {
             // Do not change this code.  Put cleanup code in Dispose(ByVal disposing As Boolean) above.
             Dispose(true);

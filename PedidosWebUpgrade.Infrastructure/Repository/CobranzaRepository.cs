@@ -14,7 +14,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public List<EstadoCuenta> ConsultarEstadoCuenta(string CustomerId)
+        public async Task<List<EstadoCuenta>> ConsultarEstadoCuenta(string CustomerId)
         {
             lDato _ldato = new lDato(_configVariables);
             List<EstadoCuenta> _Movimientos = [];
@@ -34,7 +34,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("TipoDocOriginal", "DOC_TYPE_ORIGINAL");
                 _ldato.Esquema.Add("NroDocOriginal", "DOC_NUMBER_ORIGINAL");
 
-                List_Response = _ldato.EjecutarReader(new EstadoCuenta(), "COB_USP_CONSULTARESTADOCTA", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new EstadoCuenta(), "COB_USP_CONSULTARESTADOCTA", _ldato.Parametros, _ldato.Esquema);
                 _Movimientos = List_Response.Valor;
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Movimientos;
         }
 
-        public List<ListaGeneral> ConsultarTipoPago()
+        public async Task<List<ListaGeneral>> ConsultarTipoPago()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _TipoPagos = [];
@@ -58,7 +58,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("IdTipo", "Id");
                 _ldato.Esquema.Add("Descripcion", "tipo_pago");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "COB_USP_CONSULTARTIPOPAGO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "COB_USP_CONSULTARTIPOPAGO", _ldato.Parametros, _ldato.Esquema);
                 _TipoPagos = List_Response.Valor;
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _TipoPagos;
         }
 
-        public List<ListaGeneral> ConsultarMonedas()
+        public async Task<List<ListaGeneral>> ConsultarMonedas()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _Monedas = [];
@@ -82,7 +82,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("Codigo", "cod_moneda");
                 _ldato.Esquema.Add("Descripcion", "cod_moneda");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "COB_USP_CONSULTARMONEDA", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "COB_USP_CONSULTARMONEDA", _ldato.Parametros, _ldato.Esquema);
                 _Monedas = List_Response.Valor;
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Monedas;
         }
 
-        public List<ListaGeneral> ConsultarBancos()
+        public async Task<List<ListaGeneral>> ConsultarBancos()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _Bancos = [];
@@ -106,7 +106,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("Codigo", "Codigo");
                 _ldato.Esquema.Add("Descripcion", "descripcion");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "COB_USP_CONSULTARBANCOS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "COB_USP_CONSULTARBANCOS", _ldato.Parametros, _ldato.Esquema);
                 _Bancos = List_Response.Valor;
             }
             catch (Exception ex)
@@ -121,7 +121,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Bancos;
         }
 
-        public List<TipoCambio> ConsultarTipoCambio(string moneda)
+        public async Task<List<TipoCambio>> ConsultarTipoCambio(string moneda)
         {
             lDato _ldato = new lDato(_configVariables);
             List<TipoCambio> _TipoCambio = [];
@@ -134,7 +134,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("MonedaDestino", "cod_moneda_destino");
                 _ldato.Esquema.Add("TasaCambio", "tasa_cambio");
                 _ldato.Esquema.Add("Fecha", "fecha");
-                List_Response = _ldato.EjecutarReader(new TipoCambio(), "COB_USP_CONSULTARTIPOCAMBIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new TipoCambio(), "COB_USP_CONSULTARTIPOCAMBIO", _ldato.Parametros, _ldato.Esquema);
                 _TipoCambio = List_Response.Valor;
             }
             catch (Exception ex)

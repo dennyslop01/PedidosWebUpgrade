@@ -8,6 +8,7 @@ using PedidosWebUpgrade.Domain.ViewModels;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Threading.Tasks;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -27,20 +28,21 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult Sistema()
+        public async Task<IActionResult> Sistema()
         {
             Sistema _Modelo = new Sistema();
             try
             {
 
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/Sistema");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/Sistema");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _Modelo = new ConfiguracionRepository(_configVariables).ConsultarSistema().FirstOrDefault();
+                List<Sistema> sistemas = await new ConfiguracionRepository(_configVariables).ConsultarSistema();
+                _Modelo = sistemas.FirstOrDefault();
 
             }
             catch (Exception e)
@@ -52,7 +54,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost]
-        public IActionResult Sistema(Sistema Modelo)
+        public async Task<IActionResult> Sistema(Sistema Modelo)
         {
             int _result = 0;
             bool _resultemail = false;
@@ -60,7 +62,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/Sistema");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/Sistema");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -69,7 +71,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     Modelo.Usuario = HttpContext.Session.GetString("login");
-                    var _resultQuery = new ConfiguracionRepository(_configVariables).ActualizarSistema(Modelo);
+                    var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarSistema(Modelo);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)
@@ -93,7 +95,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                             //ENVIAR NOTIFICACION DE CORREO
                             if (!string.IsNullOrEmpty(Modelo.Destinatarios))
                             {
-                                _resultemail = new EmailRepository(_configVariables).SendMailAdmSistema(Modelo.Estado, Modelo.Destinatarios, Modelo.Usuario);
+                                _resultemail = await new EmailRepository(_configVariables).SendMailAdmSistema(Modelo.Estado, Modelo.Destinatarios, Modelo.Usuario);
                             }
                             break;
                         default:
@@ -112,19 +114,19 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult ContadorPedidos()
+        public async Task<IActionResult> ContadorPedidos()
         {
             List<ContadorPedidosPais> _Modelo = new List<ContadorPedidosPais>();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _Modelo = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais();
+                _Modelo = await new ConfiguracionRepository(_configVariables).ConsultarPedidosPais();
             }
             catch (Exception e)
             {
@@ -135,20 +137,21 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult ConsultarUnContadorPedido(string CodigoPais, int Anno)
+        public async Task<IActionResult> ConsultarUnContadorPedido(string CodigoPais, int Anno)
         {
             ContadorPedidosPais _Modelo = new ContadorPedidosPais();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
                 if (!string.IsNullOrWhiteSpace(CodigoPais) && Anno > 0)
                 {
-                    _Modelo = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().FirstOrDefault(x => x.CodigoPais.Trim().ToUpper() == CodigoPais.Trim().ToUpper() && x.AnnoCurso == Anno);
+                    List<ContadorPedidosPais> pedidosPais = await new ConfiguracionRepository(_configVariables).ConsultarPedidosPais();
+                    _Modelo = pedidosPais.FirstOrDefault(x => x.CodigoPais.Trim().ToUpper() == CodigoPais.Trim().ToUpper() && x.AnnoCurso == Anno);
                 }
                 else
                 {
@@ -164,12 +167,12 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public IActionResult ConsultarUnContadorPedido(ContadorPedidosPais Modelo)
+        public async Task<IActionResult> ConsultarUnContadorPedido(ContadorPedidosPais Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -177,7 +180,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new ConfiguracionRepository(_configVariables).ActualizarContadorPais(Modelo);
+                    var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarContadorPais(Modelo);
                     if (_resultQuery > 0)
                     {
                         ViewBag.Mensaje = "¡Información guardada Correctamente!";
@@ -191,7 +194,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 {
                     ModelState.AddModelError(string.Empty, "¡Debe llenar los campos!");
                 }
-                Modelo.Paises = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Select(x => new ListaGeneral() { Codigo = x.CodigoPais, Descripcion = x.Pais }).ToList();
+                Modelo.Paises = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Result.Select(x => new ListaGeneral() { Codigo = x.CodigoPais, Descripcion = x.Pais }).ToList();
                 ViewBag.action = "POST";
             }
             catch (Exception e)
@@ -204,14 +207,14 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult CopiarContadores()
+        public async Task<IActionResult> CopiarContadores()
         {
 
             ContadorPedidosPais _Modelo = new ContadorPedidosPais();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/CopiarContadores");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/CopiarContadores");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -230,12 +233,12 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public IActionResult CopiarContadores(ContadorPedidosPais Modelo)
+        public async Task<IActionResult> CopiarContadores(ContadorPedidosPais Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/CopiarContadores");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/CopiarContadores");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -243,7 +246,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (Modelo.AnnoCurso > 0 && Modelo.AnnoNuevo > 0)
                 {
-                    var _resultQuery = new ConfiguracionRepository(_configVariables).CopiarContadoresAnno(Modelo.AnnoCurso, Modelo.AnnoNuevo);
+                    var _resultQuery = await new ConfiguracionRepository(_configVariables).CopiarContadoresAnno(Modelo.AnnoCurso, Modelo.AnnoNuevo);
                     if (_resultQuery > 0)
                     {
                         ViewBag.Mensaje = "¡Información guardada Correctamente!";
@@ -270,28 +273,28 @@ namespace PedidosWebUpgrade.Web.Controllers
         public JsonResult ObtenerContadorPais(int Anno, string CodigoPais)
         {
             int contador = 0;
-            var resultquery = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Where(x => x.AnnoCurso == Anno && x.CodigoPais == CodigoPais).FirstOrDefault();
+            var resultquery = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Result.Where(x => x.AnnoCurso == Anno && x.CodigoPais == CodigoPais).FirstOrDefault();
             if (resultquery != null) { contador = resultquery.Contador; }
             return Json(new { contador });
         }
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult ConsultarF0004()
+        public async Task<IActionResult> ConsultarF0004()
         {
             List<F0004> Modelo = new List<F0004>();
 
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
 
-                Modelo = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null);
+                Modelo = await new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null);
 
 
             }
@@ -304,13 +307,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult DetalleF0004(string dtsy, string dtrt)
+        public async Task<IActionResult> DetalleF0004(string dtsy, string dtrt)
         {
             F0004 _Modelo = new F0004();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -318,7 +321,8 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (!string.IsNullOrEmpty(dtsy) && !string.IsNullOrEmpty(dtrt))
                 {
-                    _Modelo = new ConfiguracionRepository(_configVariables).ObtenerF0004(dtsy, dtrt).FirstOrDefault();
+                    List<F0004> f004 = await new ConfiguracionRepository(_configVariables).ObtenerF0004(dtsy, dtrt);
+                    _Modelo = f004.FirstOrDefault();
                 }
 
             }
@@ -331,20 +335,20 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public IActionResult DetalleF0004(F0004 Modelo)
+        public async Task<IActionResult> DetalleF0004(F0004 Modelo)
         {
 
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
 
-                var _resultQuery = new ConfiguracionRepository(_configVariables).ActualizarF0004(Modelo);
+                var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarF0004(Modelo);
                 if (_resultQuery > 0)
                 {
                     ViewBag.result = true;
@@ -370,7 +374,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new ConfiguracionRepository(_configVariables).EliminarF0004(dtsy, dtrt);
+                _result = new ConfiguracionRepository(_configVariables).EliminarF0004(dtsy, dtrt).Result;
 
             }
             catch (Exception e)
@@ -382,27 +386,27 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult ConsultarF0005()
+        public async Task<IActionResult> ConsultarF0005()
         {
             ConsultarF0005ViewModel Modelo = new ConsultarF0005ViewModel();
 
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarF0005");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
                 //LLENADO DE  LISTAS
-                Modelo.Productos = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null).Select(x => new ListaGeneral() { Codigo = x.dtsy, Descripcion = x.dtsy }).ToList();
+                Modelo.Productos = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null).Result.Select(x => new ListaGeneral() { Codigo = x.dtsy, Descripcion = x.dtsy }).ToList();
                 Modelo.Productos.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
 
-                Modelo.CodigoUsuarios = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null).Select(x => new ListaGeneral() { Codigo = x.dtrt, Descripcion = x.dtrt }).ToList();
+                Modelo.CodigoUsuarios = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null).Result.Select(x => new ListaGeneral() { Codigo = x.dtrt, Descripcion = x.dtrt }).ToList();
                 Modelo.CodigoUsuarios.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
 
-                Modelo.ListF0005 = new ConfiguracionRepository(_configVariables).ObtenerF0005(null, null, null);
+                Modelo.ListF0005 = await new ConfiguracionRepository(_configVariables).ObtenerF0005(null, null, null);
 
 
             }
@@ -414,13 +418,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult BuscarF0005(string CodigoProducto, string CodigoUsuario)
+        public async Task<IActionResult> BuscarF0005(string CodigoProducto, string CodigoUsuario)
         {
             List<F0005> _ListF0005 = new List<F0005>();
             string viewContent = string.Empty;
             try
             {
-                _ListF0005 = new ConfiguracionRepository(_configVariables).ObtenerF0005(CodigoProducto, CodigoUsuario, null);
+                _ListF0005 = await new ConfiguracionRepository(_configVariables).ObtenerF0005(CodigoProducto, CodigoUsuario, null);
                 viewContent = ConvertViewToString("_ListF0005", _ListF0005);
 
                 //GUARDAR LOS VALORES DE BUSQUEDA
@@ -441,7 +445,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new ConfiguracionRepository(_configVariables).EliminarF0005(drrt, drsy, drky);
+                _result =  new ConfiguracionRepository(_configVariables).EliminarF0005(drrt, drsy, drky).Result;
 
             }
             catch (Exception e)
@@ -453,13 +457,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult DetalleF0005(string drsy, string drrt, string drky)
+        public async Task<IActionResult> DetalleF0005(string drsy, string drrt, string drky)
         {
             F0005 _Modelo = new F0005();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0005");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -467,8 +471,8 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (!string.IsNullOrEmpty(drsy) && !string.IsNullOrEmpty(drrt))
                 {
-                    _Modelo = new ConfiguracionRepository(_configVariables).ObtenerF0005(drsy, drrt, drky).FirstOrDefault();
-                    ViewBag.disabled = true;
+                    List<F0005> f005 = await new ConfiguracionRepository(_configVariables).ObtenerF0005(drsy, drrt, drky);
+                    _Modelo = f005.FirstOrDefault();
                 }
 
             }
@@ -481,23 +485,24 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public IActionResult DetalleF0005(F0005 Modelo)
+        public async Task<IActionResult> DetalleF0005(F0005 Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0005");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
                 //VERIFICAR VALORES EN TABLA F0004
-                List<F0004> _F0004 = new ConfiguracionRepository(_configVariables).ObtenerF0004(Modelo.drsy, Modelo.drrt).ToList();
+                List<F0004> _ListaF0004 = await new ConfiguracionRepository(_configVariables).ObtenerF0004(Modelo.drsy, Modelo.drrt);
+                List<F0004> _F0004 = _ListaF0004.ToList();
                 if (_F0004.Count > 0)
                 {
 
-                    var _resultQuery = new ConfiguracionRepository(_configVariables).ActualizarF0005(Modelo);
+                    var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarF0005(Modelo);
                     if (_resultQuery > 0)
                     {
                         ViewBag.result = true;
@@ -529,20 +534,20 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult ConsultarPreferenciaAlmacenClientePais()
+        public async Task<IActionResult> ConsultarPreferenciaAlmacenClientePais()
         {
             PrefeAlmClienPaisViewModel Modelo = new PrefeAlmClienPaisViewModel();
 
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarPreferenciaAlmacenClientePais");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarPreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo.PrefAlmClientPaisList = new ConfiguracionRepository(_configVariables).ObtenerPreferenciaAlmacenClientePais(0);
+                Modelo.PrefAlmClientPaisList = await new ConfiguracionRepository(_configVariables).ObtenerPreferenciaAlmacenClientePais(0);
             }
             catch (Exception e)
             {
@@ -557,7 +562,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new ConfiguracionRepository(_configVariables).EliminarPreferenciaAlmacenClientePais(IdPreferencia);
+                _result = new ConfiguracionRepository(_configVariables).EliminarPreferenciaAlmacenClientePais(IdPreferencia).Result;
             }
             catch (Exception e)
             {
@@ -568,13 +573,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult DetallePreferenciaAlmacenClientePais(int IdPreferencia)
+        public async Task<IActionResult> DetallePreferenciaAlmacenClientePais(int IdPreferencia)
         {
             PrefeAlmClienPaisViewModel Modelo = new PrefeAlmClienPaisViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetallePreferenciaAlmacenClientePais");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetallePreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -582,18 +587,19 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (IdPreferencia > 0)
                 {
+                    List<PreferenciaAlmacenClientePais> preferencias = await new ConfiguracionRepository(_configVariables).ObtenerPreferenciaAlmacenClientePais(IdPreferencia);
                     PreferenciaAlmacenClientePais model = new PreferenciaAlmacenClientePais();
-                    model = new ConfiguracionRepository(_configVariables).ObtenerPreferenciaAlmacenClientePais(IdPreferencia).FirstOrDefault();
+                    model = preferencias.FirstOrDefault();
                     Modelo.IdPreferencia = model.IdPreferencia;
                     Modelo.IdAlmacen = model.IdAlmacen;
                     Modelo.IdCliente = model.IdCliente;
                     Modelo.Codpais = model.Codpais;
                     ViewBag.disabled = true;
                 }
-                Modelo.ListaAlmacenes = new AlmacenRepository(_configVariables).ConsultarAlmacenes(0).Select(x => new ListaGeneral() { Codigo = x.IdAlmacen, Descripcion = x.IdAlmacen + " - " + x.Descripcion }).ToList();
+                Modelo.ListaAlmacenes = new AlmacenRepository(_configVariables).ConsultarAlmacenes(0).Result.Select(x => new ListaGeneral() { Codigo = x.IdAlmacen, Descripcion = x.IdAlmacen + " - " + x.Descripcion }).ToList();
                 //Modelo.ListaClientes = new ClienteRepository().ObtenerClientes((string)Session["idvendedor"], string.Empty, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
-                Modelo.ListaClientes = new ClienteRepository(_configVariables).ObtenerClientesPotencia(null).Select(x => new ListaGeneral() { Codigo = x.CustomerId.Trim(), Descripcion = x.CustomerId.Trim() + " - " + x.Name.Trim() }).ToList();
-                Modelo.ListaPaises = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Select(x => new ListaGeneral() { Codigo = x.CodigoPais, Descripcion = x.CodigoPais + " - " + x.Pais }).ToList();
+                Modelo.ListaClientes = new ClienteRepository(_configVariables).ObtenerClientesPotencia(null).Result.Select(x => new ListaGeneral() { Codigo = x.CustomerId.Trim(), Descripcion = x.CustomerId.Trim() + " - " + x.Name.Trim() }).ToList();
+                Modelo.ListaPaises = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Result.Select(x => new ListaGeneral() { Codigo = x.CodigoPais, Descripcion = x.CodigoPais + " - " + x.Pais }).ToList();
             }
             catch (Exception e)
             {
@@ -604,13 +610,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public IActionResult DetallePreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
+        public async Task<IActionResult> DetallePreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
         {
             PrefeAlmClienPaisViewModel _Modelo = new PrefeAlmClienPaisViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetallePreferenciaAlmacenClientePais");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetallePreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -620,7 +626,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 string _msj = string.Empty;
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new ConfiguracionRepository(_configVariables).ActualizarPreferenciaAlmacenClientePais(preferenciaAlmacenClientePais);
+                    var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarPreferenciaAlmacenClientePais(preferenciaAlmacenClientePais);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)
@@ -651,12 +657,17 @@ namespace PedidosWebUpgrade.Web.Controllers
                     ViewBag.disabled = false;
                     ModelState.AddModelError(string.Empty, "Faltan campos por seleccionar.");
                 }
+
+                List<Almacen> almacens = await new AlmacenRepository(_configVariables).ConsultarAlmacenes(0);
+                List<Customer> customers = await new ClienteRepository(_configVariables).ObtenerClientesPotencia(null);
+                List<ContadorPedidosPais> pedidos = await new ConfiguracionRepository(_configVariables).ConsultarPedidosPais();
+
                 _Modelo = new PrefeAlmClienPaisViewModel()
                 {
-                    ListaAlmacenes = new AlmacenRepository(_configVariables).ConsultarAlmacenes(0).Select(x => new ListaGeneral() { Codigo = x.IdAlmacen, Descripcion = x.IdAlmacen + " - " + x.Descripcion }).ToList(),
+                    ListaAlmacenes = almacens.Select(x => new ListaGeneral() { Codigo = x.IdAlmacen, Descripcion = x.IdAlmacen + " - " + x.Descripcion }).ToList(),
                     //ListaClientes = new ClienteRepository().ObtenerClientes((string)Session["idvendedor"], string.Empty, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList(),
-                    ListaClientes = new ClienteRepository(_configVariables).ObtenerClientesPotencia(null).Select(x => new ListaGeneral() { Codigo = x.CustomerId.Trim(), Descripcion = x.CustomerId.Trim() + " - " + x.Name.Trim() }).ToList(),
-                    ListaPaises = new ConfiguracionRepository(_configVariables).ConsultarPedidosPais().Select(x => new ListaGeneral() { Codigo = x.CodigoPais, Descripcion = x.CodigoPais + " - " + x.Pais }).ToList(),
+                    ListaClientes = customers.Select(x => new ListaGeneral() { Codigo = x.CustomerId.Trim(), Descripcion = x.CustomerId.Trim() + " - " + x.Name.Trim() }).ToList(),
+                    ListaPaises = pedidos.Select(x => new ListaGeneral() { Codigo = x.CodigoPais, Descripcion = x.CodigoPais + " - " + x.Pais }).ToList(),
                     Codpais = preferenciaAlmacenClientePais.Codpais,
                     IdAlmacen = preferenciaAlmacenClientePais.IdAlmacen,
                     IdCliente = preferenciaAlmacenClientePais.IdCliente,
@@ -673,35 +684,36 @@ namespace PedidosWebUpgrade.Web.Controllers
         [HttpPost()]
         public JsonResult ObtenerListCodigoUsuario(string dtsy)
         {
-            List<ListaGeneral> CodigosUsuarios = new ConfiguracionRepository(_configVariables).ObtenerF0004(dtsy, null).Select(x => new ListaGeneral() { Codigo = x.dtrt, Descripcion = x.dtrt }).ToList();
+            List<ListaGeneral> CodigosUsuarios = new ConfiguracionRepository(_configVariables).ObtenerF0004(dtsy, null).Result.Select(x => new ListaGeneral() { Codigo = x.dtrt, Descripcion = x.dtrt }).ToList();
             CodigosUsuarios.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
             return Json(new { CodigosUsuarios });
         }
 
         [HttpPost()]
-        public JsonResult ObtenerUDC(string dtsy, string dtrt)
+        public async Task<JsonResult> ObtenerUDC(string dtsy, string dtrt)
         {
-            string descripcion = new ConfiguracionRepository(_configVariables).ObtenerF0004(dtsy, dtrt).Select(x => x.dtdl01).FirstOrDefault();
+            List<F0004> _ListF0004 = await new ConfiguracionRepository(_configVariables).ObtenerF0004(dtsy, dtrt);
+            string descripcion = _ListF0004.Select(x => x.dtdl01).FirstOrDefault();
             return Json(new { descripcion });
         }
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult ConsultarAgentesAduanales()
+        public async Task<IActionResult> ConsultarAgentesAduanales()
         {
             List<ForwardingAgent> Modelo = new List<ForwardingAgent>();
 
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarAgentesAduanales");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarAgentesAduanales");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
                 //LLENADO DE  LISTAS
-                Modelo = new ConfiguracionRepository(_configVariables).ConsultarAgentesAduanales();
+                Modelo = await new ConfiguracionRepository(_configVariables).ConsultarAgentesAduanales();
             }
             catch (Exception e)
             {
@@ -712,14 +724,14 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public IActionResult DetalleAgenteAduanal(int AgentId)
+        public async Task<IActionResult> DetalleAgenteAduanal(int AgentId)
         {
 
             ForwardingAgent _Modelo = new ForwardingAgent();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleAgenteAduanal");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleAgenteAduanal");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -727,7 +739,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (AgentId > 0)
                 {
-                    _Modelo = new ConfiguracionRepository(_configVariables).ConsultarUnAgenteAduanal(AgentId);
+                    _Modelo = await new ConfiguracionRepository(_configVariables).ConsultarUnAgenteAduanal(AgentId);
                 }
             }
             catch (Exception e)
@@ -739,20 +751,20 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public IActionResult DetalleAgenteAduanal(ForwardingAgent forwardingAgent)
+        public async Task<IActionResult> DetalleAgenteAduanal(ForwardingAgent forwardingAgent)
         {
             ForwardingAgent _Modelo = new ForwardingAgent();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleAgenteAduanal");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleAgenteAduanal");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new ConfiguracionRepository(_configVariables).ActualizarAgenteAduanal(forwardingAgent);
+                    var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarAgenteAduanal(forwardingAgent);
                     if (bool.Parse(_resultQuery["@RESULT"].ToString()))
                     {
                         ViewBag.Mensaje = "¡Información guardada Con Exito!";
@@ -780,7 +792,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new ConfiguracionRepository(_configVariables).EliminarAgenteAduanal(AgentId);
+                _result = new ConfiguracionRepository(_configVariables).EliminarAgenteAduanal(AgentId).Result;
 
             }
             catch (Exception e)

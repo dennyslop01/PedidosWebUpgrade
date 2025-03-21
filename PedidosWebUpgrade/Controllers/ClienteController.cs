@@ -20,20 +20,20 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public IActionResult FacturasPendientes()
+        public async Task<IActionResult> FacturasPendientes()
         {
             List<Customer> _Clientes = new List<Customer>();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cliente/FacturasPendientes");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cliente/FacturasPendientes");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
 
-                _Clientes = new ClienteRepository(_configVariables).ObtenerClientes(null, null, 1);
+                _Clientes = await new ClienteRepository(_configVariables).ObtenerClientes(null, null, 1);
 
             }
             catch (Exception e)
@@ -53,7 +53,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 factpend = (Valor == "SI" ? false : true);
-                _result = new ClienteRepository(_configVariables).ActualizarFacturaPendiente(CustomerId, factpend);
+                _result = new ClienteRepository(_configVariables).ActualizarFacturaPendiente(CustomerId, factpend).Result;
             }
             catch (Exception e)
             {
@@ -69,7 +69,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
 
-                _result = new ClienteRepository(_configVariables).VerificarFacturaPendiente(CustomerId);
+                _result = new ClienteRepository(_configVariables).VerificarFacturaPendiente(CustomerId).Result;
             }
             catch (Exception e)
             {

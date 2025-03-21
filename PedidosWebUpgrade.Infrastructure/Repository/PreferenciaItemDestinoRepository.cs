@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
         
-        public List<PreferenciaItemDestino> Listar(int IdPreferencia)
+        public async Task<List<PreferenciaItemDestino>> Listar(int IdPreferencia)
         {
             lDato _ldato = new lDato(_configVariables);
             List<PreferenciaItemDestino> _preferencia = new List<PreferenciaItemDestino>();
@@ -31,7 +31,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("ProductId", "product_id");
                 _ldato.Esquema.Add("Producto", "producto");
 
-                List_Response = _ldato.EjecutarReader(new PreferenciaItemDestino(), "CON_USP_CONSULTARPREFERENCIAITEMDESTINO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PreferenciaItemDestino(), "CON_USP_CONSULTARPREFERENCIAITEMDESTINO", _ldato.Parametros, _ldato.Esquema);
                 _preferencia = List_Response.Valor;
             }
             catch (Exception ex)
@@ -46,7 +46,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _preferencia;
         }
 
-        public Dictionary<string, object> Actualizar(PreferenciaItemDestino _Preferencia)
+        public async Task<Dictionary<string, object>> Actualizar(PreferenciaItemDestino _Preferencia)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -58,7 +58,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.SmallInt},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARPREFERENCIAITEMDESTINO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARPREFERENCIAITEMDESTINO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public Dictionary<string, object> Eliminar(int IdPreferencia)
+        public async Task<Dictionary<string, object>> Eliminar(int IdPreferencia)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -84,7 +84,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@MSJ", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.VarChar, Size = -1},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_ELIMINARPREFERENCIAITEMDESTINO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_ELIMINARPREFERENCIAITEMDESTINO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)

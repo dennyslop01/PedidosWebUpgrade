@@ -4,15 +4,15 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface IClienteRepository
     {
-        List<Customer> ObtenerClientes(string salesmanid, string warehouse, int FactPend, string customerid);
+        Task<List<Customer>> ObtenerClientes(string salesmanid, string warehouse, int FactPend, string customerid);
 
-        List<Customer> ObtenerClientesPotencia(string customerid);
+        Task<List<Customer>> ObtenerClientesPotencia(string customerid);
 
-        List<Customer> ObtenerShipTo(string salesmanid, string warehouse, int FactPend, string customerid);
+        Task<List<Customer>> ObtenerShipTo(string salesmanid, string warehouse, int FactPend, string customerid);
 
-        int ActualizarFacturaPendiente(string CustomerId, bool valor);
+        Task<int> ActualizarFacturaPendiente(string CustomerId, bool valor);
 
-        int VerificarFacturaPendiente(string CustomerId);
+        Task<int> VerificarFacturaPendiente(string CustomerId);
 
     }
 }

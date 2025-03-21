@@ -18,12 +18,12 @@ namespace PedidosWebUpgrade.Web.Components
             _browserDetector = browserDetector;
         }
 
-        public IViewComponentResult InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
             List<Menu> Model = new List<Menu>();
             try
             {
-                Model = new MenuRepository(_configVariables).ObtenerMenuUsuario(int.Parse(HttpContext.Session.GetString("idusuario")));
+                Model = await new MenuRepository(_configVariables).ObtenerMenuUsuario(int.Parse(HttpContext.Session.GetString("idusuario")));
             }
             catch (Exception e)
             {

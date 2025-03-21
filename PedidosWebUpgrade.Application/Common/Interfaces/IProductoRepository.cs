@@ -4,16 +4,14 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface IProductoRepository
     {
-        List<ListaGeneral> ObtenerCategorias();
+        Task<List<ListaGeneral>> ObtenerCategorias();
 
-        List<Producto> ObtenerProductos(string CodigoProducto, string CodigoSucursal, string CodigoCategoria, string CodigoCliente, string CodListPrecio);
+        Task<List<Producto>> ObtenerProductos(string CodigoProducto, string CodigoSucursal, string CodigoCategoria, string CodigoCliente, string CodListPrecio);
 
-        List<ListaGeneral> ObtenerMarcas();
+        Task<List<ListaGeneral>> ObtenerMarcas();
 
-        int ActualizarIconoMarca(string icono, string marca);
+        Task<int> ActualizarIconoMarca(string icono, string marca);
 
-        List<Product> ObtenerTodoslosProductos(string IdProducto);
-
-
+        Task<List<Product>> ObtenerTodoslosProductos(string IdProducto);
     }
 }

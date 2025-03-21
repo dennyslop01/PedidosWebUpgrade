@@ -4,18 +4,18 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface IUsuarioRepository
     {
-        Dictionary<string, object> ValidarUsuario(string login, string password);
+        Task<Dictionary<string, object>> ValidarUsuario(string login, string password);
 
-        List<Usuario> ObtenerUsuario(int IdUsuario);
+        Task<List<Usuario>> ObtenerUsuario(int IdUsuario);
 
-        List<Salesman> ObtenerSalesman(string IdSalesman);
+        Task<List<Salesman>> ObtenerSalesman(string IdSalesman);
 
-        int EliminarUsuario(int IdUsuario);
+        Task<int> EliminarUsuario(int IdUsuario);
 
-        Dictionary<string, object> ActualizarUsuario(Usuario _usuario);
+        Task<Dictionary<string, object>> ActualizarUsuario(Usuario _usuario);
 
-        List<Menu> ObtenerPermisos(int IdUsuario, string url);
+        Task<List<Menu>> ObtenerPermisos(int IdUsuario, string url);
 
-        List<ListaGeneral> ObtenerTipoUsuario();
+        Task<List<ListaGeneral>> ObtenerTipoUsuario();
     }
 }

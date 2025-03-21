@@ -23,19 +23,19 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult AsociarIconoMarca()
+        public async Task<IActionResult> AsociarIconoMarca()
         {
             List<ListaGeneral> _Marcas = new List<ListaGeneral>();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Producto/AsociarIconoMarca");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Producto/AsociarIconoMarca");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _Marcas = new ProductoRepository(_configVariables).ObtenerMarcas();
+                _Marcas = await new ProductoRepository(_configVariables).ObtenerMarcas();
                 _Marcas.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
                 ViewData["marcas"] = new SelectList(from s in _Marcas select new { Codigo = s.Codigo, Descripcion = s.Codigo + " - " + s.Descripcion }, "Codigo", "Descripcion");
             }
@@ -47,14 +47,14 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult AsociarIconoMarca(string ListMarcas, IFormFile ImageFile)
+        public async Task<IActionResult> AsociarIconoMarca(string ListMarcas, IFormFile ImageFile)
         {
             List<ListaGeneral> _Marcas = new List<ListaGeneral>();
             string _nombreimg = string.Empty;
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Producto/AsociarIconoMarca");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Producto/AsociarIconoMarca");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -62,7 +62,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
 
 
-                _Marcas = new ProductoRepository(_configVariables).ObtenerMarcas();
+                _Marcas = await new ProductoRepository(_configVariables).ObtenerMarcas();
                 _Marcas.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
                 ViewData["marcas"] = new SelectList(from s in _Marcas select new { Codigo = s.Codigo, Descripcion = s.Codigo + " - " + s.Descripcion }, "Codigo", "Descripcion");
 
@@ -71,7 +71,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                     if (ImageFile != null && ImageFile.Length > 0)
                     {
                         _nombreimg = string.Format("{0:}{1}", ListMarcas, Path.GetExtension(ImageFile.FileName));
-                        var _resultQuery = new ProductoRepository(_configVariables).ActualizarIconoMarca(_nombreimg, ListMarcas);
+                        var _resultQuery = await new ProductoRepository(_configVariables).ActualizarIconoMarca(_nombreimg, ListMarcas);
 
                         if (_resultQuery == 1)
                         {

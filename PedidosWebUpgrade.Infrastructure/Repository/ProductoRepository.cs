@@ -18,7 +18,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
          /// LISTADO DE CATEGORIAS DE PRODUCTOS
          /// </summary>
          /// <returns>List<ListaGeneral></returns>
-        public List<ListaGeneral> ObtenerCategorias()
+        public async Task<List<ListaGeneral>> ObtenerCategorias()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _Categorias = new List<ListaGeneral>();
@@ -28,7 +28,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
                 _ldato.Esquema.Add("Codigo", "ID");
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARCATEGORIA", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARCATEGORIA", _ldato.Parametros, _ldato.Esquema);
                 _Categorias = List_Response.Valor;
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// LISTADO DE PRODUCTOS
         /// </summary>
         /// <returns>List<ListaGeneral></returns>
-        public List<Producto> ObtenerProductos(string CodigoProducto, string CodigoSucursal, string CodigoCategoria, string CodigoCliente, string CodListPrecio)
+        public async Task<List<Producto>> ObtenerProductos(string CodigoProducto, string CodigoSucursal, string CodigoCategoria, string CodigoCliente, string CodListPrecio)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Producto> _Productos = new List<Producto>();
@@ -70,7 +70,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Imagen", "NOMBRE_ICONO");
                 _ldato.Esquema.Add("CantidadIngresada", "QTY_ORDER");
                 _ldato.Esquema.Add("Moneda", "Moneda");
-                List_Response = _ldato.EjecutarReader(new Producto(), "PED_USP_CONSULTARPRODUCTO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Producto(), "PED_USP_CONSULTARPRODUCTO", _ldato.Parametros, _ldato.Esquema);
                 _Productos = List_Response.Valor;
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Productos;
         }
 
-        public List<ListaGeneral> ObtenerMarcas()
+        public async Task<List<ListaGeneral>> ObtenerMarcas()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _Marcas = new List<ListaGeneral>();
@@ -94,7 +94,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("Codigo", "CODIGO");
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARMARCAS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARMARCAS", _ldato.Parametros, _ldato.Esquema);
                 _Marcas = List_Response.Valor;
             }
             catch (Exception ex)
@@ -109,7 +109,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Marcas;
         }
 
-        public int ActualizarIconoMarca(string icono, string marca)
+        public async Task<int> ActualizarIconoMarca(string icono, string marca)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -117,7 +117,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@BRAND", marca);
                 _ldato.Parametros.Add("@ICONO", icono);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ACTUALIZARICONOMARCA", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ACTUALIZARICONOMARCA", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -126,7 +126,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public List<Product> ObtenerTodoslosProductos(string IdProducto)
+        public async Task<List<Product>> ObtenerTodoslosProductos(string IdProducto)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Product> _Productos = new List<Product>();
@@ -159,7 +159,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Imitm", "IMITM");
                 _ldato.Esquema.Add("Imsrp9", "IMSRP9");
 
-                List_Response = _ldato.EjecutarReader(new Product(), "PED_USP_CONSULTARPRODUCTOSGENERAL", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Product(), "PED_USP_CONSULTARPRODUCTOSGENERAL", _ldato.Parametros, _ldato.Esquema);
                 _Productos = List_Response.Valor;
             }
             catch (Exception ex)

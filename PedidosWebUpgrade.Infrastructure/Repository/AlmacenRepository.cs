@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public Dictionary<string, object> ActualizarAlmacen(Almacen _Almacen)
+        public async Task<Dictionary<string, object>> ActualizarAlmacen(Almacen _Almacen)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -31,7 +31,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.SmallInt},
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_CREARALMACEN", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_CREARALMACEN", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             ;
         }
-        public List<Almacen> ConsultarAlmacenes(int Id)
+        public async Task<List<Almacen>> ConsultarAlmacenes(int Id)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Almacen> _Almacen = [];
@@ -62,7 +62,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("NombreVendedorProforma", "NOMBREVENDEDORPROFORMA");
                 _ldato.Esquema.Add("NombreVendedorOrderProdupcion", "NOMBREVENDEDORORDEN");
 
-                List_Response = _ldato.EjecutarReader(new Almacen(), "PED_USP_CONSULTARARALMACENES", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Almacen(), "PED_USP_CONSULTARARALMACENES", _ldato.Parametros, _ldato.Esquema);
                 _Almacen = List_Response.Valor;
             }
             catch (Exception ex)
@@ -76,14 +76,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             return _Almacen;
         }
-        public int EliminarAlmacen(int Id)
+        public async Task<int> EliminarAlmacen(int Id)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@ID", Id);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ELIMINARALMACEN", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ELIMINARALMACEN", _ldato.Parametros);
             }
             catch (Exception ex)
             {

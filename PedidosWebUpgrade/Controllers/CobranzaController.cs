@@ -27,20 +27,20 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public IActionResult EstadoCuenta()
+        public async Task<IActionResult> EstadoCuenta()
         {
             EstadoCuentaViewModel Modelo = new EstadoCuentaViewModel();
 
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cobranza/EstadoCuenta");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cobranza/EstadoCuenta");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes((string)HttpContext.Session.GetString("idvendedor"), null, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
+                Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes((string)HttpContext.Session.GetString("idvendedor"), null, 2).Result.Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
                 Modelo.Clientes.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
             }
             catch (Exception e)
@@ -74,14 +74,14 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult BuscarMovimientos(string CodCli)
+        public async Task<IActionResult> BuscarMovimientos(string CodCli)
         {
             List<EstadoCuenta> _Movimientos = new List<EstadoCuenta>();
             string viewContent = string.Empty;
 
             try
             {
-                _Movimientos = new CobranzaRepository(_configVariables).ConsultarEstadoCuenta(CodCli);
+                _Movimientos = await new CobranzaRepository(_configVariables).ConsultarEstadoCuenta(CodCli);
                 viewContent = ConvertViewToString("_Movimientos", _Movimientos);
 
             }
@@ -92,7 +92,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             return Json(new { result = viewContent });
         }
 
-        public IActionResult EnviarEstadoCuenta(string CodCli)
+        public async Task<IActionResult> EnviarEstadoCuenta(string CodCli)
         {
 
             bool _resultemail = false;
@@ -100,8 +100,8 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
-                _Movimientos = new CobranzaRepository(_configVariables).ConsultarEstadoCuenta(CodCli);
-                _resultemail = new EmailRepository(_configVariables).SendMailEstadoCuenta((string)HttpContext.Session.GetString("idvendedor"), CodCli, _Movimientos);
+                _Movimientos = await new CobranzaRepository(_configVariables).ConsultarEstadoCuenta(CodCli);
+                _resultemail = await new EmailRepository(_configVariables).SendMailEstadoCuenta((string)HttpContext.Session.GetString("idvendedor"), CodCli, _Movimientos);
             }
             catch (Exception e)
             {
@@ -112,34 +112,35 @@ namespace PedidosWebUpgrade.Web.Controllers
 
 
         [HttpGet]
-        public IActionResult CobrarDocumento(string IdCustomer)
+        public async Task<IActionResult> CobrarDocumento(string IdCustomer)
         {
             CobranzaClienteViewModel _Modelo = new CobranzaClienteViewModel();
             try
             {
 
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cobranza/CobrarDocumento");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cobranza/CobrarDocumento");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
                 //DATOS DEL CLIENTE
-                _Modelo.IdCliente = new ClienteRepository(_configVariables).ObtenerClientes((string)HttpContext.Session.GetString("idvendedor"), null, 2).Where(x => x.CustomerId == IdCustomer).FirstOrDefault().CustomerId;
-                _Modelo.Cliente = new ClienteRepository(_configVariables).ObtenerClientes((string)HttpContext.Session.GetString("idvendedor"), null, 2).Where(x => x.CustomerId == IdCustomer).FirstOrDefault().Name;
+                List<Customer> customers = await new ClienteRepository(_configVariables).ObtenerClientes((string)HttpContext.Session.GetString("idvendedor"), null, 2);
+                _Modelo.IdCliente = customers.Where(x => x.CustomerId == IdCustomer).FirstOrDefault().CustomerId;
+                _Modelo.Cliente = customers.Where(x => x.CustomerId == IdCustomer).FirstOrDefault().Name;
 
                 //TIPOS DE PAGO
-                _Modelo.PagoCliente.TiposPagos = new CobranzaRepository(_configVariables).ConsultarTipoPago();
+                _Modelo.PagoCliente.TiposPagos = await new CobranzaRepository(_configVariables).ConsultarTipoPago();
 
                 //TIPOS DE MONEDAS
-                _Modelo.PagoCliente.TiposMonedas = new CobranzaRepository(_configVariables).ConsultarMonedas();
+                _Modelo.PagoCliente.TiposMonedas = await new CobranzaRepository(_configVariables).ConsultarMonedas();
 
                 //BANCOS
-                _Modelo.PagoCliente.Bancos = new CobranzaRepository(_configVariables).ConsultarBancos();
+                _Modelo.PagoCliente.Bancos = await new CobranzaRepository(_configVariables).ConsultarBancos();
 
                 //MOVIMIENTOS DEL CLIENTE
-                _Modelo.Movimientos = new CobranzaRepository(_configVariables).ConsultarEstadoCuenta(IdCustomer);
+                _Modelo.Movimientos = await new CobranzaRepository(_configVariables).ConsultarEstadoCuenta(IdCustomer);
             }
             catch (Exception e)
             {
@@ -150,13 +151,14 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult ObtenerTasaCambio(string moneda)
+        public async Task<IActionResult> ObtenerTasaCambio(string moneda)
         {
             TipoCambio _Modelo = new TipoCambio();
             string _tasacambio = "0";
             try
             {
-                _Modelo = new CobranzaRepository(_configVariables).ConsultarTipoCambio(moneda).FirstOrDefault();
+                List<TipoCambio> _Tipo = await new CobranzaRepository(_configVariables).ConsultarTipoCambio(moneda);
+                _Modelo = _Tipo.FirstOrDefault();
                 if (_Modelo != null) { _tasacambio = _Modelo.TasaCambio; }
 
             }

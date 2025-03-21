@@ -24,7 +24,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// <param name="CodCliente"></paramstring>
         /// <param name="IdOrden">int</param>
         /// <returns> Dictionary<string, object> </returns>
-        public Dictionary<string, object> AgregarProducto(Producto Producto, string CodCliente, int IdOrden)
+        public async Task<Dictionary<string, object>> AgregarProducto(Producto Producto, string CodCliente, int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -41,7 +41,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO",  Direction = ParameterDirection.Output, SqlDbType = SqlDbType.TinyInt }
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_CREARORDENPEDIDO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_CREARORDENPEDIDO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// <param name="IdOrden">int</param>
         /// <param name="IdCliente">string</param>
         /// <returns>EncabezadoPedido</returns>
-        public EncabezadoPedido ObtenerEncabezadoOrden(int IdOrden, string IdCliente, string salesmanid = null)
+        public async Task<EncabezadoPedido> ObtenerEncabezadoOrden(int IdOrden, string IdCliente, string salesmanid = null)
         {
             lDato _ldato = new lDato(_configVariables);
             List<EncabezadoPedido> _Encabezado = [];
@@ -80,7 +80,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Moneda", "MONEDA");
                 _ldato.Esquema.Add("ImpuestoTotal", "tax_total");
 
-                List_Response = _ldato.EjecutarReader(new EncabezadoPedido(), "PED_USP_CONSULTARENCABEZADOORDEN", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new EncabezadoPedido(), "PED_USP_CONSULTARENCABEZADOORDEN", _ldato.Parametros, _ldato.Esquema);
                 _Encabezado = List_Response.Valor;
             }
             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// </summary>
         /// <param name="IdOrden">int</param> 
         /// <returns>bool</returns>
-        public bool ProcesarOrden(int IdOrden, string condicion, int porcentaje, string fechapedido, string fecharequerida, string observacion, string montototal,
+        public async Task<bool> ProcesarOrden(int IdOrden, string condicion, int porcentaje, string fechapedido, string fecharequerida, string observacion, string montototal,
                                    string montodscto, string prepagado, string tasanegociacion, string idcarrier, string idpuertodescarga, string idincoterms,
                                    string referencia01, string tiempollegada, string ordenprint, int usuario, string fechacorte, string leadtime, string codModalidad,
                                    string FechaDespachoETD, string FechaLlegadaETA, int ForwardingAgent, string idlistaprecio, string idshipto, string idalmacen, string CodCondPago, string codPaisFacturacion, int codAnnoCorrelativo, int TipoPedido)
@@ -145,7 +145,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@TIPOPEDIDO", TipoPedido);
 
 
-                _data = _ldato.EjecutarScalarReader("PED_USP_PROCESARORDEN", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_PROCESARORDEN", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -160,7 +160,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// </summary>
         /// <param name="IdOrden">int</param> 
         /// <returns>bool</returns>
-        public bool AprobarOrden(int IdOrden)
+        public async Task<bool> AprobarOrden(int IdOrden)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -168,11 +168,11 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
 
                 _ldato.Parametros.Add("@ORDERID", IdOrden);
-                _ldato.EjecutarScalarReader("PED_USP_SEGMENTARMARCASPEDIDO", _ldato.Parametros);
+                await _ldato.EjecutarScalarReader("PED_USP_SEGMENTARMARCASPEDIDO", _ldato.Parametros);
 
                 _ldato = new lDato(_configVariables);
                 _ldato.Parametros.Add("@ORDERID", IdOrden);
-                _data = _ldato.EjecutarScalarReader("PED_USP_APROBARORDEN", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_APROBARORDEN", _ldato.Parametros);
 
                 // Segmentacion del pedido
             }
@@ -183,7 +183,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (bool)_data.Valor;
         }
 
-        public List<Orders> ConsultarPedidos(string CustomerId, string FechaDesde, string FechaHasta, int OrderId, string Estatus, int IdUsuario)
+        public async Task<List<Orders>> ConsultarPedidos(string CustomerId, string FechaDesde, string FechaHasta, int OrderId, string Estatus, int IdUsuario)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Orders> _Pedidos = [];
@@ -255,7 +255,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("DescripcionCondicionPago", "DescripcionCondicionPago");
 
 
-                List_Response = _ldato.EjecutarReader(new Orders(), "PED_USP_CONSULTARPEDIDOSGENERADOS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Orders(), "PED_USP_CONSULTARPEDIDOSGENERADOS", _ldato.Parametros, _ldato.Esquema);
                 _Pedidos = List_Response.Valor;
             }
             catch (Exception ex)
@@ -270,7 +270,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Pedidos;
         }
 
-        public List<ListaGeneral> ObtenerEstatus()
+        public async Task<List<ListaGeneral>> ObtenerEstatus()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _Estatus = [];
@@ -279,7 +279,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("Codigo", "CODIGO");
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARESTATUSPEDIDOS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARESTATUSPEDIDOS", _ldato.Parametros, _ldato.Esquema);
                 _Estatus = List_Response.Valor;
             }
             catch (Exception ex)
@@ -294,7 +294,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Estatus;
         }
 
-        public List<EstatusOrden> ObtenerEstatusOrden()
+        public async Task<List<EstatusOrden>> ObtenerEstatusOrden()
         {
             lDato _ldato = new lDato(_configVariables);
             List<EstatusOrden> _EstatusOrden = [];
@@ -307,7 +307,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Orden", "ORDEN");
                 _ldato.Esquema.Add("Icono", "ICONO");
 
-                List_Response = _ldato.EjecutarReader(new EstatusOrden(), "PED_USP_CONSULTARESTATUSORDEN", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new EstatusOrden(), "PED_USP_CONSULTARESTATUSORDEN", _ldato.Parametros, _ldato.Esquema);
                 _EstatusOrden = List_Response.Valor;
             }
             catch (Exception ex)
@@ -323,7 +323,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
         }
 
-        public List<SeguimientoOrden> ObtenerSeguimiento(int IdOrden)
+        public async Task<List<SeguimientoOrden>> ObtenerSeguimiento(int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
             List<SeguimientoOrden> _SeguimientoOrden = [];
@@ -337,7 +337,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("FechaModificacion", "FECHAMODIFICACION");
                 _ldato.Esquema.Add("HoraModificacion", "HORAMODIFICACION");
 
-                List_Response = _ldato.EjecutarReader(new SeguimientoOrden(), "PED_USP_CONSULTARSEGUIMIENTOORDEN", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new SeguimientoOrden(), "PED_USP_CONSULTARSEGUIMIENTOORDEN", _ldato.Parametros, _ldato.Esquema);
                 _SeguimientoOrden = List_Response.Valor;
             }
             catch (Exception ex)
@@ -359,7 +359,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// <param name="IdOrden">int</param>
         /// <param name="IdCliente">string</param>
         /// <returns>EncabezadoPedido</returns>
-        public List<Descuento> ObtenerCalculoDescuentoComercial(int IdOrden, float Porcentaje)
+        public async Task<List<Descuento>> ObtenerCalculoDescuentoComercial(int IdOrden, float Porcentaje)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Descuento> _Encabezado = [];
@@ -375,7 +375,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("DescuentoCesta", "DESCUENTO_CESTA");
                 _ldato.Esquema.Add("TotalPagarCesta", "TOTAL_PAGAR_CESTA");
 
-                List_Response = _ldato.EjecutarReader(new Descuento(), "PED_USP_CALCULARDESCUENTOCOMERCIAL", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Descuento(), "PED_USP_CALCULARDESCUENTOCOMERCIAL", _ldato.Parametros, _ldato.Esquema);
                 _Encabezado = List_Response.Valor;
             }
             catch (Exception ex)
@@ -390,7 +390,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Encabezado;
         }
 
-        public List<PedidoPDFViewModel> ConsultarOrdenPdf(int IdOrden, int Tipo)
+        public async Task<List<PedidoPDFViewModel>> ConsultarOrdenPdf(int IdOrden, int Tipo)
         {
             lDato _ldato = new lDato(_configVariables);
             List<PedidoPDFViewModel> _PedidoGenerado = [];
@@ -462,7 +462,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("NombreLogoProduccion", "nombre_logo_produccion");
                 //_ldato.Esquema.Add("VAT", "VAT");
 
-                List_Response = _ldato.EjecutarReader(new PedidoPDFViewModel(), "PED_USP_IMPRIMIRORDEN", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PedidoPDFViewModel(), "PED_USP_IMPRIMIRORDEN", _ldato.Parametros, _ldato.Esquema);
                 _PedidoGenerado = List_Response.Valor;
             }
             catch (Exception ex)
@@ -477,7 +477,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _PedidoGenerado;
         }
 
-        public bool EliminarPedido(int IdOrden, string IdMotivo, int IdUsuario)
+        public async Task<bool> EliminarPedido(int IdOrden, string IdMotivo, int IdUsuario)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -486,7 +486,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@IDORDER", IdOrden);
                 _ldato.Parametros.Add("@DRKY", IdMotivo);
                 _ldato.Parametros.Add("@USERID", IdUsuario);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ELIMINARPEDIDO", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ELIMINARPEDIDO", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -495,7 +495,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Convert.ToBoolean(_data.Valor);
         }
 
-        public Dictionary<string, object> ReactivarPedido(int IdOrden, string IdMotivo, int IdUsuario)
+        public async Task<Dictionary<string, object>> ReactivarPedido(int IdOrden, string IdMotivo, int IdUsuario)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -507,7 +507,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.TinyInt},
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_REACTIVAR_PEDIDO_SEGMENTADO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_REACTIVAR_PEDIDO_SEGMENTADO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -522,14 +522,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public Dictionary<string, object> EnviarProforma(int IdOrden)
+        public async Task<Dictionary<string, object>> EnviarProforma(int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 List<SqlParameter> _parametros = [new SqlParameter() { ParameterName = "@ORDERID", Value = IdOrden, SqlDbType = SqlDbType.Int }];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_ENVIARPROFORMACORREO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_ENVIARPROFORMACORREO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -544,14 +544,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public Dictionary<string, object> AsignarPoNumber(int IdOrden)
+        public async Task<Dictionary<string, object>> AsignarPoNumber(int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 List<SqlParameter> _parametros = [new SqlParameter() { ParameterName = "@ORDERID", Value = IdOrden, SqlDbType = SqlDbType.Int }];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_ASIGNARPONUMBER", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_ASIGNARPONUMBER", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -566,7 +566,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<HistoriaOrder> ConsultarHistoricoPedidos(int IdOrden)
+        public async Task<List<HistoriaOrder>> ConsultarHistoricoPedidos(int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
             List<HistoriaOrder> _Pedidos = [];
@@ -585,7 +585,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Comentario", "COMENTARIO");
                 _ldato.Esquema.Add("NumCorrelativo", "order_number");
 
-                List_Response = _ldato.EjecutarReader(new HistoriaOrder(), "PED_USP_CONSULTARHISTORIAREVISIONORDER", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new HistoriaOrder(), "PED_USP_CONSULTARHISTORIAREVISIONORDER", _ldato.Parametros, _ldato.Esquema);
                 _Pedidos = List_Response.Valor;
             }
             catch (Exception ex)
@@ -600,7 +600,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Pedidos;
         }
 
-        public List<ListaGeneral> ConsultarCondicionesDePago()
+        public async Task<List<ListaGeneral>> ConsultarCondicionesDePago()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> Lista = [];
@@ -609,7 +609,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("Codigo", "ID");
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARCONDICIONPAGO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARCONDICIONPAGO", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
@@ -624,7 +624,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Lista;
         }
 
-        public List<ListaGeneral> ConsultarForwardingAgent()
+        public async Task<List<ListaGeneral>> ConsultarForwardingAgent()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> Lista = [];
@@ -633,7 +633,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Esquema.Add("IdTipo", "codigo");
                 _ldato.Esquema.Add("Descripcion", "descripcion");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARAGENTES", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARAGENTES", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
@@ -648,7 +648,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Lista;
         }
 
-        public List<ListaGeneral> ConsultarPaisesFacturacion(string IdCli)
+        public async Task<List<ListaGeneral>> ConsultarPaisesFacturacion(string IdCli)
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> Lista = [];
@@ -659,7 +659,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
                 _ldato.Esquema.Add("Codigo", "codigo");
                 _ldato.Esquema.Add("Descripcion", "descripcion");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARPAISFACTURACION", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARPAISFACTURACION", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
@@ -674,7 +674,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Lista;
         }
 
-        public List<ListaGeneral> ConsultarContadoresAnnoPais(string codigoPais)
+        public async Task<List<ListaGeneral>> ConsultarContadoresAnnoPais(string codigoPais)
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> Lista = [];
@@ -685,7 +685,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
                 _ldato.Esquema.Add("IdTipo", "anno");
                 _ldato.Esquema.Add("Descripcion", "descripcion");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_OBTENERCONTADORESANNOPAIS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_OBTENERCONTADORESANNOPAIS", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
@@ -700,7 +700,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Lista;
         }
 
-        public bool RecalcularPrecioOrden(int IdOrden, int IdUsuario)
+        public async Task<bool> RecalcularPrecioOrden(int IdOrden, int IdUsuario)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -708,7 +708,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@ORDERID", IdOrden);
                 _ldato.Parametros.Add("@USERID", IdUsuario);
-                _data = _ldato.EjecutarScalarReader("PED_USP_RECALCULARPRECIOORDEN", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_RECALCULARPRECIOORDEN", _ldato.Parametros);
             }
             catch (Exception ex)
             {

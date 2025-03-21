@@ -26,13 +26,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         
         // GET: ListaPrecios
         [HttpGet()]
-        public IActionResult ConsultarCabListaPrecios()
+        public async Task<IActionResult> ConsultarCabListaPrecios()
         {
             List<F45520> Modelo = new List<F45520>();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "ListaPrecios/ConsultarCabListaPrecios");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "ListaPrecios/ConsultarCabListaPrecios");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -48,20 +48,20 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult ConsultaDetListaPrecios(string phdoco, string phdcto)
+        public async Task<IActionResult> ConsultaDetListaPrecios(string phdoco, string phdcto)
         {
             ListaPreciosViewModel Modelo = new ListaPreciosViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "ListaPrecios/ConsultaDetListaPrecios");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "ListaPrecios/ConsultaDetListaPrecios");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo.CabListPrecios = new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().FirstOrDefault();
-                Modelo.ListDetListPrecios = new ListaPreciosRepository(_configVariables).ConsultarDetalleListaPrecio(phdoco, phdcto).ToList();
+                Modelo.CabListPrecios = await new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().FirstOrDefault();
+                Modelo.ListDetListPrecios = await new ListaPreciosRepository(_configVariables).ConsultarDetalleListaPrecio(phdoco, phdcto).ToList();
             }
             catch (Exception e)
             {
@@ -71,7 +71,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult ImprimirReporteListaPrecios(string doco, string dcto)
+        public async Task<IActionResult> ImprimirReporteListaPrecios(string doco, string dcto)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         public byte[] ConstruirPDF(string doco, string dcto, int IdUsuario)
         {
             List<ListPreciosPrint> _Detalle = new List<ListPreciosPrint>();
-            _Detalle = new ListaPreciosRepository(_configVariables).ConsultarDetallesReporteListaPrecios(doco, dcto, IdUsuario);
+            _Detalle = new ListaPreciosRepository(_configVariables).ConsultarDetallesReporteListaPrecios(doco, dcto, IdUsuario).Result;
 
             byte[] bytes;
 

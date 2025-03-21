@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public List<PreferenciaClientePais> ObtenerPreferenciaClientePais(int IdOrden)
+        public async Task<List<PreferenciaClientePais>> ObtenerPreferenciaClientePais(int IdOrden)
         {
             lDato _ldato = new lDato(_configVariables);
             List<PreferenciaClientePais> _PreferenciaClientePais = new List<PreferenciaClientePais>();
@@ -29,7 +29,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("CodCliente", "cliente");
                 _ldato.Esquema.Add("Cliente", "Clinombre");
 
-                List_Response = _ldato.EjecutarReader(new PreferenciaClientePais(), "PED_USP_CONSULTARPREFERENCIACLIENTEPAIS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PreferenciaClientePais(), "PED_USP_CONSULTARPREFERENCIACLIENTEPAIS", _ldato.Parametros, _ldato.Esquema);
                 _PreferenciaClientePais = List_Response.Valor;
             }
             catch (Exception ex)
@@ -44,7 +44,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _PreferenciaClientePais;
         }
 
-        public List<PreferenciaClientePais> ObtenerPreferenciaClientePais()
+        public async Task<List<PreferenciaClientePais>> ObtenerPreferenciaClientePais()
         {
             lDato _ldato = new lDato(_configVariables);
             List<PreferenciaClientePais> _PreferenciaClientePais = new List<PreferenciaClientePais>();
@@ -56,7 +56,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("CodCliente", "cliente");
                 _ldato.Esquema.Add("Cliente", "Clinombre");
 
-                List_Response = _ldato.EjecutarReader(new PreferenciaClientePais(), "PED_USP_CONSULTARPREFERENCIACLIENTEPAIS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PreferenciaClientePais(), "PED_USP_CONSULTARPREFERENCIACLIENTEPAIS", _ldato.Parametros, _ldato.Esquema);
                 _PreferenciaClientePais = List_Response.Valor;
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _PreferenciaClientePais;
         }
 
-        public Dictionary<string, object> ActualizarPreferenciaClientePais(PreferenciaClientePais preferenciaClientePais)
+        public async Task<Dictionary<string, object>> ActualizarPreferenciaClientePais(PreferenciaClientePais preferenciaClientePais)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -82,7 +82,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@MSJ", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.VarChar, Size = -1},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_ACTUALIZARPREFERENCIACLIENTEPAIS", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_ACTUALIZARPREFERENCIACLIENTEPAIS", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public Dictionary<string, object> EliminarPreferenciaClientePais(string codCliente, string codPais)
+        public async Task<Dictionary<string, object>> EliminarPreferenciaClientePais(string codCliente, string codPais)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -109,7 +109,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@MSJ", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.VarChar, Size = -1},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_ELIMINARPREFERENCIACLIENTEPAIS", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_ELIMINARPREFERENCIACLIENTEPAIS", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)

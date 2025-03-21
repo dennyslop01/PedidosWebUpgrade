@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public List<Menu> ObtenerMenu(int IdMenu)
+        public async Task<List<Menu>> ObtenerMenu(int IdMenu)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Menu> _Menu = new List<Menu>();
@@ -33,7 +33,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Activo", "ACTIVO");
                 _ldato.Esquema.Add("Visible", "VISIBLE");
 
-                List_Response = _ldato.EjecutarReader(new Menu(), "CON_USP_CONSULTARMENU", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Menu(), "CON_USP_CONSULTARMENU", _ldato.Parametros, _ldato.Esquema);
                 _Menu = List_Response.Valor;
             }
             catch (Exception ex)
@@ -48,14 +48,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Menu;
         }
 
-        public int EliminarMenu(int IdMenu)
+        public async Task<int> EliminarMenu(int IdMenu)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDMENU", IdMenu);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARMENU", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARMENU", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public Dictionary<string, object> ActualizarMenu(Menu _Menu)
+        public async Task<Dictionary<string, object>> ActualizarMenu(Menu _Menu)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -81,7 +81,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.TinyInt},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARMENU", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARMENU", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -96,7 +96,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<Menu> ObtenerMenuUsuario(int IdUsuario)
+        public async Task<List<Menu>> ObtenerMenuUsuario(int IdUsuario)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Menu> _Menu = new List<Menu>();
@@ -111,7 +111,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Icon", "ICON");
                 _ldato.Esquema.Add("Url", "URL");
 
-                List_Response = _ldato.EjecutarReader(new Menu(), "CON_USP_CONSULTARMENU_USUARIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Menu(), "CON_USP_CONSULTARMENU_USUARIO", _ldato.Parametros, _ldato.Esquema);
                 _Menu = List_Response.Valor;
             }
             catch (Exception ex)

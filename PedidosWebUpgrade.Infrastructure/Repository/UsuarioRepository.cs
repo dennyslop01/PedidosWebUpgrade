@@ -22,7 +22,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// <param name="login">string</param>
         /// <param name="password">string</param>
         /// <returns>Dictionary<string, object></returns>
-        public Dictionary<string, object> ValidarUsuario(string login, string password)
+        public async Task<Dictionary<string, object>> ValidarUsuario(string login, string password)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -36,7 +36,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@IsLoginByUrl", Value = false  , SqlDbType = SqlDbType.Bit}
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_AUTENTICARUSUARIO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_AUTENTICARUSUARIO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// </summary>
         /// <param name="IdUsuario">int</param>
         /// <returns>Usuario</returns>
-        public List<Usuario> ObtenerUsuario(int IdUsuario)
+        public async Task<List<Usuario>> ObtenerUsuario(int IdUsuario)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Usuario> _Usuario = [];
@@ -83,7 +83,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
 
 
-                List_Response = _ldato.EjecutarReader(new Usuario(), "CON_USP_CONSULTARUSUARIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Usuario(), "CON_USP_CONSULTARUSUARIO", _ldato.Parametros, _ldato.Esquema);
                 _Usuario = List_Response.Valor;
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// </summary>
         /// <param name="IdSalesman">int</param>
         /// <returns>List<Salesman></returns>
-        public List<Salesman> ObtenerSalesman(string IdSalesman)
+        public async Task<List<Salesman>> ObtenerSalesman(string IdSalesman)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Salesman> _Salesman = [];
@@ -119,7 +119,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Estado", "ESTADO");
 
 
-                List_Response = _ldato.EjecutarReader(new Salesman(), "CON_USP_CONSULTARSALESMEN", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Salesman(), "CON_USP_CONSULTARSALESMEN", _ldato.Parametros, _ldato.Esquema);
                 _Salesman = List_Response.Valor;
             }
             catch (Exception ex)
@@ -133,14 +133,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
             return _Salesman;
         }
-        public int EliminarUsuario(int IdUsuario)
+        public async Task<int> EliminarUsuario(int IdUsuario)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@ID", IdUsuario);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARUSUARIO", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARUSUARIO", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public Dictionary<string, object> ActualizarUsuario(Usuario _usuario)
+        public async Task<Dictionary<string, object>> ActualizarUsuario(Usuario _usuario)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -174,7 +174,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.TinyInt},
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARUSUARIO", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARUSUARIO", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -189,7 +189,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<Menu> ObtenerPermisos(int IdUsuario, string url)
+        public async Task<List<Menu>> ObtenerPermisos(int IdUsuario, string url)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Menu> _Menu = [];
@@ -205,7 +205,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("PuedeEliminar", "ELIMINAR");
 
 
-                List_Response = _ldato.EjecutarReader(new Menu(), "CON_USP_CONSULTARPERMISOSUSUARIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Menu(), "CON_USP_CONSULTARPERMISOSUSUARIO", _ldato.Parametros, _ldato.Esquema);
                 _Menu = List_Response.Valor;
             }
             catch (Exception ex)
@@ -220,7 +220,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Menu;
         }
 
-        public List<ListaGeneral> ObtenerTipoUsuario()
+        public async Task<List<ListaGeneral>> ObtenerTipoUsuario()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _TiposUsuario = [];
@@ -230,7 +230,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
                 _ldato.Esquema.Add("Codigo", "TIPOUSUARIO");
                 _ldato.Esquema.Add("Descripcion", "TIPOUSUARIO");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "CON_USP_CONSULTARTIPOUSUARIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "CON_USP_CONSULTARTIPOUSUARIO", _ldato.Parametros, _ldato.Esquema);
                 _TiposUsuario = List_Response.Valor;
             }
             catch (Exception ex)

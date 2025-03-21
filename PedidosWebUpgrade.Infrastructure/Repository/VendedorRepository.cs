@@ -17,7 +17,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
         
-        public Dictionary<string, object> ActualizarVendedor(Vendedor _Vendedor)
+        public async Task<Dictionary<string, object>> ActualizarVendedor(Vendedor _Vendedor)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -35,7 +35,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.SmallInt},
                                                                          };
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_CREARVENDEDOR", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_CREARVENDEDOR", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -50,7 +50,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<Vendedor> ConsultarVendedores(int IdVendedor)
+        public async Task<List<Vendedor>> ConsultarVendedores(int IdVendedor)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Vendedor> _Vendedor = new List<Vendedor>();
@@ -68,7 +68,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("LogoOrdenProduccion", "logo_orden_produccion");
                 _ldato.Esquema.Add("LogoProforma", "logo_proforma");
 
-                List_Response = _ldato.EjecutarReader(new Vendedor(), "PED_USP_CONSULTARVENDEDORES", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Vendedor(), "PED_USP_CONSULTARVENDEDORES", _ldato.Parametros, _ldato.Esquema);
                 _Vendedor = List_Response.Valor;
             }
             catch (Exception ex)
@@ -83,14 +83,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Vendedor;
         }
 
-        public int EliminarVendedor(int IdVendedor)
+        public async Task<int> EliminarVendedor(int IdVendedor)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDVENDEDOR", IdVendedor);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ELIMINARVENDEDOR", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ELIMINARVENDEDOR", _ldato.Parametros);
             }
             catch (Exception ex)
             {

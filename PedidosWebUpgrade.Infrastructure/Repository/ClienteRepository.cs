@@ -18,7 +18,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// LISTADO DE CLIENTES
         /// </summary>
         /// <returns>List<ListaGeneral></returns>
-        public List<Customer> ObtenerClientes(string salesmanid, string warehouse, int FactPend, string customerid = null)
+        public async Task<List<Customer>> ObtenerClientes(string salesmanid, string warehouse, int FactPend, string customerid = null)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Customer> _Clientes = [];
@@ -43,7 +43,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("CPGP", "CPGP");
                 _ldato.Esquema.Add("CodCondicionPago", "COD_PAGO");
                 _ldato.Esquema.Add("IdListaPrecio", "ID_LISTA_PRECIO");
-                List_Response = _ldato.EjecutarReader(new Customer(), "PED_USP_CONSULTARCLIENTE", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Customer(), "PED_USP_CONSULTARCLIENTE", _ldato.Parametros, _ldato.Esquema);
                 _Clientes = List_Response.Valor;
             }
             catch (Exception ex)
@@ -58,7 +58,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Clientes;
         }
 
-        public List<Customer> ObtenerClientesPotencia(string customerid = null)
+        public async Task<List<Customer>> ObtenerClientesPotencia(string customerid = null)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Customer> _Clientes = [];
@@ -80,7 +80,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Email", "EMAIL");
                 _ldato.Esquema.Add("CPGP", "CPGP");
                 _ldato.Esquema.Add("CodCondicionPago", "COD_PAGO");
-                List_Response = _ldato.EjecutarReader(new Customer(), "PED_USP_CONSULTARCLIENTEPOTENCIA", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Customer(), "PED_USP_CONSULTARCLIENTEPOTENCIA", _ldato.Parametros, _ldato.Esquema);
                 _Clientes = List_Response.Valor;
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Clientes;
         }
 
-        public List<Customer> ObtenerShipTo(string salesmanid, string warehouse, int FactPend, string customerid = null)
+        public async Task<List<Customer>> ObtenerShipTo(string salesmanid, string warehouse, int FactPend, string customerid = null)
         {
             lDato _ldato = new lDato(_configVariables);
             List<Customer> _Clientes = [];
@@ -119,7 +119,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("ListaPrecio", "LISTA_PRECIO");
                 _ldato.Esquema.Add("FacturasPendientes", "FACTURAS_PENDIENTES");
                 _ldato.Esquema.Add("Email", "EMAIL"); */
-                List_Response = _ldato.EjecutarReader(new Customer(), "PED_USP_CONSULTARSHIPTO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Customer(), "PED_USP_CONSULTARSHIPTO", _ldato.Parametros, _ldato.Esquema);
                 _Clientes = List_Response.Valor;
             }
             catch (Exception ex)
@@ -136,7 +136,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
 
 
 
-        public int ActualizarFacturaPendiente(string CustomerId, bool valor)
+        public async Task<int> ActualizarFacturaPendiente(string CustomerId, bool valor)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -144,7 +144,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@CUSTOMERID", CustomerId);
                 _ldato.Parametros.Add("@VALOR", valor);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ACTUALIZARFACTURAPENDIENTE", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ACTUALIZARFACTURAPENDIENTE", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -154,14 +154,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         }
 
 
-        public int VerificarFacturaPendiente(string CustomerId)
+        public async Task<int> VerificarFacturaPendiente(string CustomerId)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@CUSTOMERID", CustomerId);
-                _data = _ldato.EjecutarScalarReader("PED_USP_VERIFICARFACTURAPENDIENTE", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_VERIFICARFACTURAPENDIENTE", _ldato.Parametros);
             }
             catch (Exception ex)
             {

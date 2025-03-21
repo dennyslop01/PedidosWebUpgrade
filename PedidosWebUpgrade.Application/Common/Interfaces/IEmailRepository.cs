@@ -4,22 +4,22 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface IEmailRepository
     {
-        Email ObtenerEmail(int Id);
+        Task<Email> ObtenerEmail(int Id);
 
-        Email ObtenerEmailDescuento(int Id);
+        Task<Email> ObtenerEmailDescuento(int Id);
 
-        bool SendMail(Email EmailModel);
+        Task<bool> SendMail(Email EmailModel);
 
-        bool SendMailSalesmen(int Idpedido, string IdSalesman, string fechapedido, string montototal, int IdUsuario);
+        Task<bool> SendMailSalesmen(int Idpedido, string IdSalesman, string fechapedido, string montototal, int IdUsuario);
 
-        bool SendMailDescuento(int Idpedido, string IdSalesman, dynamic datos, int IdUsuario);
+        Task<bool> SendMailDescuento(int Idpedido, string IdSalesman, dynamic datos, int IdUsuario);
 
-        public bool SendMailAdmSistema(string estado, string destinatarios, string usuario);
+        Task<bool> SendMailAdmSistema(string estado, string destinatarios, string usuario);
 
-        public bool SendMailEstadoCuenta(string IdSalesman, string customerid, List<EstadoCuenta> Movimientos);
+        Task<bool> SendMailEstadoCuenta(string IdSalesman, string customerid, List<EstadoCuenta> Movimientos);
 
-        bool SendMailLogistica(int Idpedido, string IdSalesman);
+        Task<bool> SendMailLogistica(int Idpedido, string IdSalesman);
 
-        public bool SendMailAprobarPedido(int IdOrden);
+        Task<bool> SendMailAprobarPedido(int IdOrden);
     }
 }

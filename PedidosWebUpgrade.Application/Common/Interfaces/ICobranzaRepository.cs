@@ -4,15 +4,15 @@ namespace PedidosWebUpgrade.Application.Common.Interfaces
 {
     public interface ICobranzaRepository
     {
-        List<EstadoCuenta> ConsultarEstadoCuenta(string CustomerId);
+        Task<List<EstadoCuenta>> ConsultarEstadoCuenta(string CustomerId);
 
-        List<ListaGeneral> ConsultarTipoPago();
+        Task<List<ListaGeneral>> ConsultarTipoPago();
 
-        List<ListaGeneral> ConsultarMonedas();
+        Task<List<ListaGeneral>> ConsultarMonedas();
 
-        List<ListaGeneral> ConsultarBancos();
+        Task<List<ListaGeneral>> ConsultarBancos();
 
-        List<TipoCambio> ConsultarTipoCambio(string moneda);
+        Task<List<TipoCambio>> ConsultarTipoCambio(string moneda);
 
 
     }

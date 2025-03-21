@@ -20,18 +20,18 @@ namespace PedidosWebUpgrade.Web.Controllers
             _env = env;
         }
 
-        public IActionResult Listar()
+        public async Task<IActionResult> Listar()
         {
             List<Vendedor> Modelo = new List<Vendedor>();
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Vendedor/Listar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Vendedor/Listar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = new VendedorRepository(_configVariables).ConsultarVendedores(0);
+                Modelo = await new VendedorRepository(_configVariables).ConsultarVendedores(0);
             }
             catch (Exception e)
             {
@@ -46,7 +46,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new VendedorRepository(_configVariables).EliminarVendedor(IdVendedor);
+                _result = new VendedorRepository(_configVariables).EliminarVendedor(IdVendedor).Result;
 
             }
             catch (Exception e)
@@ -57,12 +57,12 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int IdVendedor)
+        public async Task<IActionResult> Detalle(int IdVendedor)
         {
             Vendedor _Modelo = new Vendedor();
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Vendedor/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Vendedor/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -70,7 +70,8 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (IdVendedor > 0)
                 {
-                    _Modelo = new VendedorRepository(_configVariables).ConsultarVendedores(IdVendedor).FirstOrDefault();
+                    List<Vendedor> vendedors = await new VendedorRepository(_configVariables).ConsultarVendedores(IdVendedor);
+                    _Modelo = vendedors.FirstOrDefault();
                 }
             }
             catch (Exception e)
@@ -81,14 +82,14 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Detalle(Vendedor Modelo)
+        public async Task<IActionResult> Detalle(Vendedor Modelo)
         {
             int _IdUsuario = 0;
             int _result = 0;
             string _msj = string.Empty;
             try
             {
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Vendedor/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Vendedor/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -96,7 +97,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new VendedorRepository(_configVariables).ActualizarVendedor(Modelo);
+                    var _resultQuery = await new VendedorRepository(_configVariables).ActualizarVendedor(Modelo);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)

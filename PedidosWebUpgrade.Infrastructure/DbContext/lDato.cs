@@ -85,7 +85,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse(Integer) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         /// 
-        public DataResponse<int> EjecutarNonQuery(string nombreProcedimiento, int timeout = 30)
+        public async Task<DataResponse<int>> EjecutarNonQuery(string nombreProcedimiento, int timeout = 30)
         {
             DataResponse<int> resultado = new DataResponse<int>();
 
@@ -104,7 +104,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             Direction = ParameterDirection.ReturnValue
                         });
 
-                        resultado.Valor = comando.ExecuteNonQuery();
+                        resultado.Valor = await comando.ExecuteNonQueryAsync();
                         resultado.CodigoRetorno = (int)comando.Parameters["ValorRetorno"].Value;
                     }
 
@@ -133,7 +133,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Integer) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         /// 
-        public DataResponse<int> EjecutarNonQuery(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
+        public async Task<DataResponse<int>> EjecutarNonQuery(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
         {
             DataResponse<int> resultado = new DataResponse<int>();
 
@@ -160,7 +160,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        resultado.Valor = comando.ExecuteNonQuery();
+                        resultado.Valor = await comando.ExecuteNonQueryAsync();
                         resultado.CodigoRetorno = (int)comando.Parameters["ValorRetorno"].Value;
                     }
 
@@ -189,7 +189,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Integer) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         /// 
-        public DataResponse<int> EjecutarNonQuery(string nombreProcedimiento, List<SqlParameter> parametros, int timeout = 30)
+        public async Task<DataResponse<int>> EjecutarNonQuery(string nombreProcedimiento, List<SqlParameter> parametros, int timeout = 30)
         {
             DataResponse<int> resultado = new DataResponse<int>();
 
@@ -216,7 +216,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        resultado.Valor = comando.ExecuteNonQuery();
+                        resultado.Valor = await comando.ExecuteNonQueryAsync();
                         resultado.CodigoRetorno = (int)comando.Parameters["ValorRetorno"].Value;
                     }
 
@@ -245,7 +245,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Diccionario(NombreParametro,Valor) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         ///
-        public DataResponse<Dictionary<string, object>> EjecutarNonQueryOutput(string nombreProcedimiento, List<SqlParameter> parametros, int timeout = 30)
+        public async Task<DataResponse<Dictionary<string, object>>> EjecutarNonQueryOutput(string nombreProcedimiento, List<SqlParameter> parametros, int timeout = 30)
         {
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
 
@@ -274,7 +274,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        comando.ExecuteNonQuery();
+                        await comando.ExecuteReaderAsync();
                         resultado.CodigoRetorno = (int)comando.Parameters["ValorRetorno"].Value;
                         if (parametros != null)
                         {
@@ -394,7 +394,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (List(of T)) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         ///
-        public DataResponse<List<T>> EjecutarReader<T>(T entidad, string nombreProcedimiento, Dictionary<string, string> esquema, int timeout = 30)
+        public async Task<DataResponse<List<T>>> EjecutarReader<T>(T entidad, string nombreProcedimiento, Dictionary<string, string> esquema, int timeout = 30)
         {
             List<T> items = [];
             DataResponse<List<T>> resultado = new DataResponse<List<T>>();
@@ -416,7 +416,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             Direction = ParameterDirection.ReturnValue
                         });
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
@@ -458,7 +458,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
         /// <returns>Objeto DataResponse (List(of T)) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
-        public DataResponse<List<T>> EjecutarReader<T>(T entidad, string nombreProcedimiento, Dictionary<string, object> parametros, Dictionary<string, string> esquema, int timeout = 30)
+        public async Task<DataResponse<List<T>>> EjecutarReader<T>(T entidad, string nombreProcedimiento, Dictionary<string, object> parametros, Dictionary<string, string> esquema, int timeout = 30)
         {
             List<T> items = [];
             DataResponse<List<T>> resultado = new DataResponse<List<T>>();
@@ -488,7 +488,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
@@ -531,7 +531,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
         /// <returns>Objeto DataResponse (List(of T)) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
-        public DataResponse<List<T>> EjecutarReader<T>(T entidad, string nombreProcedimiento, List<SqlParameter> parametros, Dictionary<string, string> esquema, int timeout = 30)
+        public async Task<DataResponse<List<T>>> EjecutarReader<T>(T entidad, string nombreProcedimiento, List<SqlParameter> parametros, Dictionary<string, string> esquema, int timeout = 30)
         {
             List<T> items = [];
             DataResponse<List<T>> resultado = new DataResponse<List<T>>();
@@ -561,7 +561,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
@@ -603,7 +603,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
         /// <returns>Objeto DataResponse (Dictionario[Columna:Valor]) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
-        public DataResponse<Dictionary<string, object>> EjecutarReaderDictionary(string nombreProcedimiento, List<string> esquema, int timeout = 30)
+        public async Task<DataResponse<Dictionary<string, object>>> EjecutarReaderDictionary(string nombreProcedimiento, List<string> esquema, int timeout = 30)
         {
             Dictionary<string, object> items = [];
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
@@ -626,7 +626,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                         });
 
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
@@ -668,7 +668,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
         /// <returns>Objeto DataResponse (Dictionario[Columna:Valor]) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
-        public DataResponse<Dictionary<string, object>> EjecutarReaderDictionary(string nombreProcedimiento, Dictionary<string, object> parametros, List<string> esquema, int timeout = 30)
+        public async Task<DataResponse<Dictionary<string, object>>> EjecutarReaderDictionary(string nombreProcedimiento, Dictionary<string, object> parametros, List<string> esquema, int timeout = 30)
         {
             Dictionary<string, object> items = [];
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
@@ -699,7 +699,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
@@ -740,7 +740,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
         /// <returns>Objeto DataResponse (Dictionario[Columna:Valor]) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
-        public DataResponse<Dictionary<string, object>> EjecutarReaderDictionary(string nombreProcedimiento, List<SqlParameter> parametros, List<string> esquema, int timeout = 30)
+        public async Task<DataResponse<Dictionary<string, object>>> EjecutarReaderDictionary(string nombreProcedimiento, List<SqlParameter> parametros, List<string> esquema, int timeout = 30)
         {
             Dictionary<string, object> items = [];
             DataResponse<Dictionary<string, object>> resultado = new DataResponse<Dictionary<string, object>>();
@@ -771,7 +771,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
@@ -813,7 +813,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Xelement) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         ///
-        public DataResponse<XElement> EjecutarXmlReader(string nombreProcedimiento, int timeout = 30)
+        public async Task<DataResponse<XElement>> EjecutarXmlReader(string nombreProcedimiento, int timeout = 30)
         {
             XElement items = default(XElement);
             DataResponse<XElement> resultado = new DataResponse<XElement>();
@@ -835,7 +835,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             Direction = ParameterDirection.ReturnValue
                         });
 
-                        using (XmlReader reader = comando.ExecuteXmlReader())
+                        using (XmlReader reader = await comando.ExecuteXmlReaderAsync())
                         {
                             items = XElement.Load(reader);
                             reader.Close();
@@ -869,7 +869,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <param name="timeout">Tiempo de espera que debe esperar la ejecución antes genenar un error</param>
         /// <returns>Objeto DataResponse (Xelement) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
-        public DataResponse<XElement> EjecutarXmlReader(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
+        public async Task<DataResponse<XElement>> EjecutarXmlReader(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
         {
             XElement items = default(XElement);
             DataResponse<XElement> resultado = new DataResponse<XElement>();
@@ -899,7 +899,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        using (XmlReader reader = comando.ExecuteXmlReader())
+                        using (XmlReader reader = await comando.ExecuteXmlReaderAsync())
                         {
                             items = XElement.Load(reader);
                             reader.Close();
@@ -934,7 +934,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Xelement) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         ///
-        public DataResponse<XElement> EjecutarXmlReader(string nombreProcedimiento, List<SqlParameter> parametros, int timeout = 30)
+        public async Task<DataResponse<XElement>> EjecutarXmlReader(string nombreProcedimiento, List<SqlParameter> parametros, int timeout = 30)
         {
             XElement items = default(XElement);
             DataResponse<XElement> resultado = new DataResponse<XElement>();
@@ -964,7 +964,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-                        using (XmlReader reader = comando.ExecuteXmlReader())
+                        using (XmlReader reader = await comando.ExecuteXmlReaderAsync())
                         {
                             items = XElement.Load(reader);
                             reader.Close();
@@ -1000,7 +1000,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Object) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         ///
-        public DataResponse<object> EjecutarScalarReader(string nombreProcedimiento, int timeout = 30)
+        public async Task<DataResponse<object>> EjecutarScalarReader(string nombreProcedimiento, int timeout = 30)
         {
             object items = new object();
             DataResponse<object> resultado = new DataResponse<object>();
@@ -1022,7 +1022,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             Direction = ParameterDirection.ReturnValue
                         });
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
                             if (reader.Read())
                             {
@@ -1060,7 +1060,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
         /// <returns>Objeto DataResponse (Object) en su propiedad Valor contiene el resultado obtenido de la ejecución</returns>
         /// <remarks>Puede utilizar la propiedad CodigoRetorno del objeto DataResponse para obtener el Valor de Retorno enviado desde el SP</remarks>
         ///
-        public DataResponse<object> EjecutarScalarReader(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
+        public async Task<DataResponse<object>> EjecutarScalarReader(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
         {
             object items = new object();
             DataResponse<object> resultado = new DataResponse<object>();
@@ -1091,13 +1091,12 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                         }
 
 
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
 
                             if (reader.Read())
                             {
                                 items = reader[0];
-
                             }
 
                             reader.Close();
@@ -1123,7 +1122,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
             }
         }
 
-        public DataResponse<object> EjecutarScalar(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
+        public async Task<DataResponse<object>> EjecutarScalar(string nombreProcedimiento, Dictionary<string, object> parametros, int timeout = 30)
         {
             object items = new object();
             DataResponse<object> resultado = new DataResponse<object>();
@@ -1153,8 +1152,7 @@ namespace PedidosWebUpgrade.Infrastructure.DbContext
                             }
                         }
 
-
-                        using (SqlDataReader reader = comando.ExecuteReader())
+                        using (SqlDataReader reader = await comando.ExecuteReaderAsync())
                         {
 
                             if (reader.Read())

@@ -24,7 +24,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
         /// LISTADO DE SUCURSALES DE LA EMPRESA
         /// </summary>
         /// <returns>List<ListaGeneral></returns>
-        public List<ListaGeneral> ObtenerSucursales(string salesmanid)
+        public async Task<List<ListaGeneral>> ObtenerSucursales(string salesmanid)
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListaGeneral> _Sucursales = [];
@@ -34,7 +34,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@SALESMANID", salesmanid);
                 _ldato.Esquema.Add("Codigo", "ID");
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
-                List_Response = _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARSUCURSAL", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListaGeneral(), "PED_USP_CONSULTARSUCURSAL", _ldato.Parametros, _ldato.Esquema);
                 _Sucursales = List_Response.Valor;
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _Sucursales;
         }
 
-        public List<Compannia> ObtenerEmpresa()
+        public async Task<List<Compannia>> ObtenerEmpresa()
         {
             lDato _ldato = new lDato(_configVariables);
             List<Compannia> _Empresa = [];
@@ -68,7 +68,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("NombreCorto", "NOMBRE_CORTO");
                 _ldato.Esquema.Add("Moneda", "MONEDA");
 
-                List_Response = _ldato.EjecutarReader(new Compannia(), "CON_USP_CONSULTARCOMPANNIA", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Compannia(), "CON_USP_CONSULTARCOMPANNIA", _ldato.Parametros, _ldato.Esquema);
                 _Empresa = List_Response.Valor;
             }
             catch (Exception ex)

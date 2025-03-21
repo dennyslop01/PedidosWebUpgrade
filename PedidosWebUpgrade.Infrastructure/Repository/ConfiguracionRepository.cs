@@ -16,7 +16,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public List<Configuracion> ObtenerParametros(String categoria)
+        public async Task<List<Configuracion>> ObtenerParametros(String categoria)
         {
             lDato _ldato = new lDato(_configVariables);
             DataResponse<List<Configuracion>> List_Response = new DataResponse<List<Configuracion>>();
@@ -29,7 +29,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Codigo", "PARAMETRO");
                 _ldato.Esquema.Add("Descripcion", "DESCRIPCION");
                 _ldato.Esquema.Add("Valor", "VALOR");
-                List_Response = _ldato.EjecutarReader(new Configuracion(), "CON_USP_CONSULTARPARAMETRO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Configuracion(), "CON_USP_CONSULTARPARAMETRO", _ldato.Parametros, _ldato.Esquema);
                 _result = List_Response.Valor;
                 return _result;
             }
@@ -44,7 +44,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
         }
 
-        public List<Sistema> ConsultarSistema()
+        public async Task<List<Sistema>> ConsultarSistema()
         {
             lDato _ldato = new lDato(_configVariables);
             DataResponse<List<Sistema>> List_Response = new DataResponse<List<Sistema>>();
@@ -60,7 +60,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Fecha", "FECHA");
                 _ldato.Esquema.Add("Hora", "HORA");
                 _ldato.Esquema.Add("Destinatarios", "DESTINATARIOS");
-                List_Response = _ldato.EjecutarReader(new Sistema(), "CON_USP_CONSULTARSISTEMA", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new Sistema(), "CON_USP_CONSULTARSISTEMA", _ldato.Parametros, _ldato.Esquema);
                 _result = List_Response.Valor;
             }
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _result;
         }
 
-        public Dictionary<string, object> ActualizarSistema(Sistema _Sistema)
+        public async Task<Dictionary<string, object>> ActualizarSistema(Sistema _Sistema)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -89,7 +89,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.TinyInt},
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARSISTEMA", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("CON_USP_ACTUALIZARSISTEMA", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<ContadorPedidosPais> ConsultarPedidosPais()
+        public async Task<List<ContadorPedidosPais>> ConsultarPedidosPais()
         {
             lDato _ldato = new lDato(_configVariables);
             DataResponse<List<ContadorPedidosPais>> List_Response = new DataResponse<List<ContadorPedidosPais>>();
@@ -117,7 +117,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Pais", "nombre_pais");
                 _ldato.Esquema.Add("DiasTravesia", "dias_travesia");
                 _ldato.Esquema.Add("AnnoCurso", "anno");
-                List_Response = _ldato.EjecutarReader(new ContadorPedidosPais(), "PED_USP_CONSULTARCONTADORPEDIDOPAIS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ContadorPedidosPais(), "PED_USP_CONSULTARCONTADORPEDIDOPAIS", _ldato.Parametros, _ldato.Esquema);
                 _result = List_Response.Valor;
                 return _result;
             }
@@ -132,7 +132,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             }
         }
 
-        public int ActualizarContadorPais(ContadorPedidosPais _ContadorPais)
+        public async Task<int> ActualizarContadorPais(ContadorPedidosPais _ContadorPais)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -143,7 +143,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@DIASTRAVESIA", _ContadorPais.DiasTravesia);
                 _ldato.Parametros.Add("@ANNO", _ContadorPais.AnnoCurso);
 
-                _data = _ldato.EjecutarScalarReader("PED_USP_ACTUALIZARCONTADORPEDIDOPAIS", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ACTUALIZARCONTADORPEDIDOPAIS", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -152,7 +152,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public int CopiarContadoresAnno(int annoCurso, int AnnoNuevo)
+        public async Task<int> CopiarContadoresAnno(int annoCurso, int AnnoNuevo)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -161,7 +161,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@ANNOACTUAL", annoCurso);
                 _ldato.Parametros.Add("@ANNONUEVO", AnnoNuevo);
 
-                _data = _ldato.EjecutarScalarReader("PED_USP_COPIARCONTADORNUEVOANNO", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_COPIARCONTADORNUEVOANNO", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -170,7 +170,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public List<F0004> ObtenerF0004(string Dtsy, string Dtrt)
+        public async Task<List<F0004>> ObtenerF0004(string Dtsy, string Dtrt)
         {
             lDato _ldato = new lDato(_configVariables);
             List<F0004> _ListF0004 = [];
@@ -182,7 +182,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("dtrt", "dtrt");
                 _ldato.Esquema.Add("dtsy", "dtsy");
                 _ldato.Esquema.Add("dtdl01", "dtdl01");
-                List_Response = _ldato.EjecutarReader(new F0004(), "CON_USP_CONSULTARF0004", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new F0004(), "CON_USP_CONSULTARF0004", _ldato.Parametros, _ldato.Esquema);
                 _ListF0004 = List_Response.Valor;
             }
             catch (Exception ex)
@@ -197,7 +197,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _ListF0004;
         }
 
-        public int ActualizarF0004(F0004 _ModelF0004)
+        public async Task<int> ActualizarF0004(F0004 _ModelF0004)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -207,7 +207,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@DTSY", _ModelF0004.dtsy);
                 _ldato.Parametros.Add("@DTDL01", _ModelF0004.dtdl01);
 
-                _data = _ldato.EjecutarScalarReader("CON_USP_ACTUALIZARF0004", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ACTUALIZARF0004", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -216,7 +216,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public int EliminarF0004(string Dtsy, string Dtrt)
+        public async Task<int> EliminarF0004(string Dtsy, string Dtrt)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -224,7 +224,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             {
                 _ldato.Parametros.Add("@DTRT", Dtrt);
                 _ldato.Parametros.Add("@DTSY", Dtsy);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARF0004", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARF0004", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -233,7 +233,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public List<F0005> ObtenerF0005(string drsy, string drrt, string drky)
+        public async Task<List<F0005>> ObtenerF0005(string drsy, string drrt, string drky)
         {
             lDato _ldato = new lDato(_configVariables);
             List<F0005> _ListF0005 = [];
@@ -249,7 +249,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("drdl01", "DRDL01");
                 _ldato.Esquema.Add("drdl02", "DRDL02");
                 _ldato.Esquema.Add("drsphd", "DRSPHD");
-                List_Response = _ldato.EjecutarReader(new F0005(), "CON_USP_CONSULTARF0005", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new F0005(), "CON_USP_CONSULTARF0005", _ldato.Parametros, _ldato.Esquema);
                 _ListF0005 = List_Response.Valor;
             }
             catch (Exception ex)
@@ -264,7 +264,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _ListF0005;
         }
 
-        public int ActualizarF0005(F0005 _ModelF0005)
+        public async Task<int> ActualizarF0005(F0005 _ModelF0005)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -277,7 +277,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@DRDL02", _ModelF0005.drdl02);
                 _ldato.Parametros.Add("@DRSPHD", _ModelF0005.drsphd);
 
-                _data = _ldato.EjecutarScalarReader("CON_USP_ACTUALIZARF0005", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ACTUALIZARF0005", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -286,7 +286,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public int EliminarF0005(string Drrt, string Drsy, string Drky)
+        public async Task<int> EliminarF0005(string Drrt, string Drsy, string Drky)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
@@ -295,7 +295,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Parametros.Add("@DRRT", Drrt);
                 _ldato.Parametros.Add("@DRSY", Drsy);
                 _ldato.Parametros.Add("@DRKY", Drky);
-                _data = _ldato.EjecutarScalarReader("CON_USP_ELIMINARF0005", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("CON_USP_ELIMINARF0005", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -304,7 +304,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public List<PreferenciaAlmacenClientePais> ObtenerPreferenciaAlmacenClientePais(int IdPreferencia)
+        public async Task<List<PreferenciaAlmacenClientePais>> ObtenerPreferenciaAlmacenClientePais(int IdPreferencia)
         {
             lDato _ldato = new lDato(_configVariables);
             List<PreferenciaAlmacenClientePais> _ListPreferencias = [];
@@ -319,7 +319,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("NombrePais", "DescripcionPais");
                 _ldato.Esquema.Add("NombreAlmacen", "DescripcionAlmacen");
                 _ldato.Esquema.Add("NombreCliente", "DescripcionCliente");
-                List_Response = _ldato.EjecutarReader(new PreferenciaAlmacenClientePais(), "PED_USP_CONSULTARPREFERENCIAALMACENCLIENTEPAIS", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new PreferenciaAlmacenClientePais(), "PED_USP_CONSULTARPREFERENCIAALMACENCLIENTEPAIS", _ldato.Parametros, _ldato.Esquema);
                 _ListPreferencias = List_Response.Valor;
             }
             catch (Exception ex)
@@ -334,7 +334,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _ListPreferencias;
         }
 
-        public Dictionary<string, object> ActualizarPreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
+        public async Task<Dictionary<string, object>> ActualizarPreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -347,7 +347,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULTADO", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.SmallInt},
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_ACTUALIZARPREFERENCIAALMACENCLIENTEPAIS", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_ACTUALIZARPREFERENCIAALMACENCLIENTEPAIS", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -362,14 +362,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public int EliminarPreferenciaAlmacenClientePais(int IdPreferencia)
+        public async Task<int> EliminarPreferenciaAlmacenClientePais(int IdPreferencia)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDPREFERENCIA", IdPreferencia);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ELIMINARPREFERENCIAALMACENCLIENTEPAIS", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ELIMINARPREFERENCIAALMACENCLIENTEPAIS", _ldato.Parametros);
             }
             catch (Exception ex)
             {
@@ -378,7 +378,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return (int)_data.Valor;
         }
 
-        public Dictionary<string, object> ActualizarAgenteAduanal(ForwardingAgent forwardingAgent)
+        public async Task<Dictionary<string, object>> ActualizarAgenteAduanal(ForwardingAgent forwardingAgent)
         {
             lDato _ldato = new lDato(_configVariables);
             try
@@ -395,7 +395,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                                                                           new SqlParameter() {ParameterName = "@RESULT", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.Bit},
                                                                          ];
                 _ldato.ParametrosSql = _parametros;
-                var resultado = _ldato.EjecutarNonQueryOutput("PED_USP_CREARAGENTEADUANAL", _ldato.ParametrosSql);
+                var resultado = await _ldato.EjecutarNonQueryOutput("PED_USP_CREARAGENTEADUANAL", _ldato.ParametrosSql);
                 return resultado.Valor;
             }
             catch (Exception ex)
@@ -410,7 +410,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             ;
         }
 
-        public List<ForwardingAgent> ConsultarAgentesAduanales()
+        public async Task<List<ForwardingAgent>> ConsultarAgentesAduanales()
         {
             lDato _ldato = new lDato(_configVariables);
             List<ForwardingAgent> _ListForwardingAgente = [];
@@ -426,7 +426,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Linea6", "linea6");
                 _ldato.Esquema.Add("Linea7", "linea7");
                 _ldato.Esquema.Add("Linea8", "linea8");
-                List_Response = _ldato.EjecutarReader(new ForwardingAgent(), "PED_USP_CONSULTARAGENTESADUANALES", _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ForwardingAgent(), "PED_USP_CONSULTARAGENTESADUANALES", _ldato.Esquema);
                 _ListForwardingAgente = List_Response.Valor;
             }
             catch (Exception ex)
@@ -441,7 +441,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _ListForwardingAgente;
         }
 
-        public ForwardingAgent ConsultarUnAgenteAduanal(int AgentId)
+        public async Task<ForwardingAgent> ConsultarUnAgenteAduanal(int AgentId)
         {
             lDato _ldato = new lDato(_configVariables);
             List<ForwardingAgent> _ForwardingAgente = [];
@@ -458,7 +458,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Linea6", "linea6");
                 _ldato.Esquema.Add("Linea7", "linea7");
                 _ldato.Esquema.Add("Linea8", "linea8");
-                Response = _ldato.EjecutarReader(new ForwardingAgent(), "PED_USP_CONSULTARUNAGENTEADUANAL", _ldato.Parametros, _ldato.Esquema);
+                Response = await _ldato.EjecutarReader(new ForwardingAgent(), "PED_USP_CONSULTARUNAGENTEADUANAL", _ldato.Parametros, _ldato.Esquema);
                 _ForwardingAgente = Response.Valor;
             }
             catch (Exception ex)
@@ -473,14 +473,14 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return _ForwardingAgente.FirstOrDefault();
         }
 
-        public int EliminarAgenteAduanal(int IdAgent)
+        public async Task<int> EliminarAgenteAduanal(int IdAgent)
         {
             DataResponse<object> _data = new DataResponse<object>();
             lDato _ldato = new lDato(_configVariables);
             try
             {
                 _ldato.Parametros.Add("@IDAGENT", IdAgent);
-                _data = _ldato.EjecutarScalarReader("PED_USP_ELIMINARAGENTEADUANAL", _ldato.Parametros);
+                _data = await _ldato.EjecutarScalarReader("PED_USP_ELIMINARAGENTEADUANAL", _ldato.Parametros);
             }
             catch (Exception ex)
             {

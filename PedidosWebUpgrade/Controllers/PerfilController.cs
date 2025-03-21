@@ -22,19 +22,19 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
         
         [HttpGet()]
-        public IActionResult Listar()
+        public async Task<IActionResult> Listar()
         {
             List<Perfil> Modelo = new List<Perfil>();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Listar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Listar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = new PerfilRepository(_configVariables).ObtenerPerfil(0);
+                Modelo = await new PerfilRepository(_configVariables).ObtenerPerfil(0);
             }
             catch (Exception e)
             {
@@ -49,7 +49,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new PerfilRepository(_configVariables).EliminarPerfil(IdPerfil);
+                _result = new PerfilRepository(_configVariables).EliminarPerfil(IdPerfil).Result;
 
             }
             catch (Exception e)
@@ -60,13 +60,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult Detalle(int IdPerfil)
+        public async Task<IActionResult> Detalle(int IdPerfil)
         {
             Perfil _Modelo = new Perfil();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -74,8 +74,9 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (IdPerfil > 0)
                 {
-                    _Modelo = new PerfilRepository(_configVariables).ObtenerPerfil(IdPerfil).FirstOrDefault();
-                    _Modelo.OpcionesMenu = new PerfilRepository(_configVariables).ObtenerPerfilMenu(IdPerfil, 0);
+                    List<Perfil> perfil = await new PerfilRepository(_configVariables).ObtenerPerfil(IdPerfil);
+                    _Modelo = perfil.FirstOrDefault();
+                    _Modelo.OpcionesMenu = await new PerfilRepository(_configVariables).ObtenerPerfilMenu(IdPerfil, 0);
                 }
 
             }
@@ -87,7 +88,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult Detalle(Perfil Modelo)
+        public async Task<IActionResult> Detalle(Perfil Modelo)
         {
 
             int _result = 0;
@@ -95,7 +96,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -103,7 +104,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var _resultQuery = new PerfilRepository(_configVariables).ActualizarPerfil(Modelo);
+                    var _resultQuery = await new PerfilRepository(_configVariables).ActualizarPerfil(Modelo);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)
@@ -132,7 +133,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                             ModelState.AddModelError(string.Empty, " Ha ocurrido un error, verifique los datos e intente de nuevo.");
                             break;
                     }
-                    Modelo.OpcionesMenu = new PerfilRepository(_configVariables).ObtenerPerfilMenu(Modelo.IdPerfil, 0);
+                    Modelo.OpcionesMenu = await new PerfilRepository(_configVariables).ObtenerPerfilMenu(Modelo.IdPerfil, 0);
 
                 }
             }
@@ -151,7 +152,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int _result = 0;
             try
             {
-                _result = new PerfilRepository(_configVariables).EliminarPerfilMenu(Idperfilmenu);
+                _result = new PerfilRepository(_configVariables).EliminarPerfilMenu(Idperfilmenu).Result;
 
             }
             catch (Exception e)
@@ -162,15 +163,15 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult CargarOpcionesMenu(int Idperfil)
+        public async Task<IActionResult> CargarOpcionesMenu(int Idperfil)
         {
 
             List<Menu> _Opciones = new List<Menu>();
             List<PerfilMenu> _OpcionesMenu = new List<PerfilMenu>();
             try
             {
-                _Opciones = new MenuRepository(_configVariables).ObtenerMenu(0);
-                _OpcionesMenu = new PerfilRepository(_configVariables).ObtenerPerfilMenu(Idperfil, 0);
+                _Opciones = await new MenuRepository(_configVariables).ObtenerMenu(0);
+                _OpcionesMenu = await new PerfilRepository(_configVariables).ObtenerPerfilMenu(Idperfil, 0);
                 _Opciones = _Opciones.Where(x => !_OpcionesMenu.Where(b => b.Idmenu == x.IdMenu).Any()).ToList();
                 ViewBag.Idperfil = Idperfil;
             }
@@ -182,7 +183,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult RegistrarOpciones(string ObjJson)
+        public async Task<IActionResult> RegistrarOpciones(string ObjJson)
         {
             bool _result = false;
 
@@ -194,7 +195,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 //INSERTAR LISTADO DE PRODUCTOS
                 for (var i = 0; i < _PerfilMenu.Count; i++)
                 {
-                    _result = new PerfilRepository(_configVariables).IncluirPerfilMenu(_PerfilMenu[i]);
+                    _result = await new PerfilRepository(_configVariables).IncluirPerfilMenu(_PerfilMenu[i]);
                 }
             }
             catch (Exception e)
@@ -205,19 +206,20 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult Ver(int IdUser)
+        public async Task<IActionResult> Ver(int IdUser)
         {
             Usuario _Modelo = new Usuario();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _Modelo = new UsuarioRepository(_configVariables).ObtenerUsuario(IdUser).FirstOrDefault();
+                List<Usuario> usuarios = await new UsuarioRepository(_configVariables).ObtenerUsuario(IdUser);
+                _Modelo = usuarios.FirstOrDefault();
             }
             catch (Exception e)
             {
@@ -227,22 +229,23 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Ver(Usuario Modelo)
+        public async Task<IActionResult> Ver(Usuario Modelo)
         {
             Usuario _Modelo = new Usuario();
             int _result = 0;
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Perfil/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _result = new PerfilRepository(_configVariables).ActualizarMiPerfil(Modelo);
+                _result = new PerfilRepository(_configVariables).ActualizarMiPerfil(Modelo).Result;
                 ViewBag.result = _result;
-                Modelo = new UsuarioRepository(_configVariables).ObtenerUsuario(Convert.ToInt32(Modelo.IdUsuario)).FirstOrDefault();
+                List<Usuario> usuarios = await new UsuarioRepository(_configVariables).ObtenerUsuario(Convert.ToInt32(Modelo.IdUsuario));
+                Modelo = usuarios.FirstOrDefault();
             }
             catch (Exception e)
             {

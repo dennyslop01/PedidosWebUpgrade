@@ -37,7 +37,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         /// </summary>
         /// <returns>PedidoViewModel</returns>
         [HttpGet()]
-        public IActionResult Crear(int back = 0, int? TipoPedido = 1)
+        public async Task<IActionResult> Crear(int back = 0, int? TipoPedido = 1)
         {
             PedidoViewModel Modelo = new PedidoViewModel();
             try
@@ -66,7 +66,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
 
 
-                Modelo.Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(0, (Modelo.CodigoCliente == "" ? Modelo.Clientes.FirstOrDefault().Codigo : Modelo.CodigoCliente), HttpContext.Session.GetString("idvendedor"));
+                Modelo.Encabezado = await new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(0, (Modelo.CodigoCliente == "" ? Modelo.Clientes.FirstOrDefault().Codigo : Modelo.CodigoCliente), HttpContext.Session.GetString("idvendedor"));
 
                 Modelo.CabecListaPrecios = new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().Select(x => new ListaGeneral() { Codigo = x.Codigo.Trim(), Descripcion = x.Descripcion.Trim() }).ToList();
                 Modelo.ShipTo = new ClienteRepository(_configVariables).ObtenerShipTo(null, null, 2, null).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
@@ -125,7 +125,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 _Productos = new ProductoRepository(_configVariables).ObtenerProductos("", CodSuc, CodCat, CodCli, CodListPrecio).ToList();
-                _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(0, CodCli, HttpContext.Session.GetString("idvendedor"));
+                _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(0, CodCli, HttpContext.Session.GetString("idvendedor")).Result;
                 if (_Encabezado == null)
                 {
                     _Encabezado = new EncabezadoPedido();
@@ -152,8 +152,8 @@ namespace PedidosWebUpgrade.Web.Controllers
             string viewContent = string.Empty;
             try
             {
-                _Productos = new CestaRepository(_configVariables).ObtenerProductosCesta(IdOrden, CodCli, IdListaPrecio);
-                _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(IdOrden, CodCli, HttpContext.Session.GetString(("idvendedor")));
+                _Productos = new CestaRepository(_configVariables).ObtenerProductosCesta(IdOrden, CodCli, IdListaPrecio).Result;
+                _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(IdOrden, CodCli, HttpContext.Session.GetString(("idvendedor"))).Result;
                 if (_Encabezado == null)
                 {
                     _Encabezado = new EncabezadoPedido();
@@ -175,7 +175,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             string viewContent = string.Empty;
             try
             {
-                _Productos = new CestaRepository(_configVariables).ObtenerProductosCestaSeleccionados(IdOrden);
+                _Productos = new CestaRepository(_configVariables).ObtenerProductosCestaSeleccionados(IdOrden).Result;
                 viewContent = ConvertViewToString("_Productos", _Productos);
 
             }
@@ -194,7 +194,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         /// <param name="Idorden">int</param>
         /// <returns></returns>
         [HttpPost()]
-        public IActionResult AgregarProducto(string Producto, string CodCli, int Idorden)
+        public async Task<IActionResult> AgregarProducto(string Producto, string CodCli, int Idorden)
         {
             int _resultado = 0;
             int _idOrder = 0;
@@ -204,7 +204,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             {
 
                 Producto _Producto = JsonSerializer.Deserialize<Producto>(Producto);
-                var _resultQuery = new PedidoRepository(_configVariables).AgregarProducto(_Producto, CodCli, Idorden);
+                var _resultQuery = await new PedidoRepository(_configVariables).AgregarProducto(_Producto, CodCli, Idorden);
                 foreach (var item in _resultQuery)
                 {
                     switch (item.Key)
@@ -219,7 +219,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                             break;
                     }
                 }
-                _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(_idOrder, CodCli);
+                _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(_idOrder, CodCli).Result;
             }
             catch (Exception e)
             {
@@ -234,7 +234,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         /// <param name="IdOrden">int</param>
         /// <returns>Json</returns>
         [HttpPost()]
-        public IActionResult ProcesarOrden(int IdOrden, string ParamCesta)
+        public async Task<IActionResult> ProcesarOrden(int IdOrden, string ParamCesta)
         {
             bool _result = false;
             bool _resultemail = false;
@@ -276,7 +276,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult AprobarOrden(int IdOrden, string NroOrden)
+        public async Task<IActionResult> AprobarOrden(int IdOrden, string NroOrden)
         {
             bool _result = false;
             //bool _resultemail = false;
@@ -285,7 +285,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
 
-                _result = new PedidoRepository(_configVariables).AprobarOrden(IdOrden);
+                _result = new PedidoRepository(_configVariables).AprobarOrden(IdOrden).Result;
                 if (_result)
                 {
                     bytes = ConstruirPDF(IdOrden, "PRODUCTION  ORDER", 1);
@@ -378,13 +378,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult Consultar(string CodCli = null, string NroPedido = "0", string CodEstatus = null, string FechaDesde = null, string FechaHasta = null)
+        public async Task<IActionResult> Consultar(string CodCli = null, string NroPedido = "0", string CodEstatus = null, string FechaDesde = null, string FechaHasta = null)
         {
             PedidosGeneradosViewModel _Modelo = new PedidosGeneradosViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Consultar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Consultar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -401,7 +401,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 _Modelo = new PedidosGeneradosViewModel { CodigoCliente = CodCli, CodigoEstatus = CodEstatus, FechaDesde = FechaDesde, FechaHasta = FechaHasta, NumeroPedido = NroPedido };
                 _Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), null, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
                 _Modelo.Clientes.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
-                _Modelo.Estatus = new PedidoRepository(_configVariables).ObtenerEstatus();
+                _Modelo.Estatus = await new PedidoRepository(_configVariables).ObtenerEstatus();
                 _Modelo.Estatus.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
                 _Modelo.Ordenes = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, Convert.ToInt32(NroPedido), CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
             }
@@ -413,13 +413,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult ConsultarModificacion(string CodCli = null, string NroPedido = "0", string CodEstatus = null, string FechaDesde = null, string FechaHasta = null)
+        public async Task<IActionResult> ConsultarModificacion(string CodCli = null, string NroPedido = "0", string CodEstatus = null, string FechaDesde = null, string FechaHasta = null)
         {
             PedidosGeneradosViewModel _Modelo = new PedidosGeneradosViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/ConsultarModificacion");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/ConsultarModificacion");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -435,7 +435,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 _Modelo = new PedidosGeneradosViewModel { CodigoCliente = CodCli, CodigoEstatus = CodEstatus, FechaDesde = FechaDesde, FechaHasta = FechaHasta, NumeroPedido = NroPedido };
                 _Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), null, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
                 _Modelo.Clientes.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
-                _Modelo.Estatus = new PedidoRepository(_configVariables).ObtenerEstatus();
+                _Modelo.Estatus = await new PedidoRepository(_configVariables).ObtenerEstatus();
                 _Modelo.Estatus.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
                 _Modelo.Ordenes = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, Convert.ToInt32(NroPedido), CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
             }
@@ -452,7 +452,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             bool _result = false;
             try
             {
-                _result = new CestaRepository(_configVariables).ActualizarCorrelativo(Nrocorrelativo, IdOrden);
+                _result = new CestaRepository(_configVariables).ActualizarCorrelativo(Nrocorrelativo, IdOrden).Result;
             }
             catch (Exception e)
             {
@@ -462,7 +462,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult BuscarPedidos(string CodCli, int NroPedido, string CodEstatus, string FechaDesde, string FechaHasta)
+        public async Task<IActionResult> BuscarPedidos(string CodCli, int NroPedido, string CodEstatus, string FechaDesde, string FechaHasta)
         {
             List<Orders> _pedidos = new List<Orders>();
             string viewContent = string.Empty;
@@ -490,7 +490,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public IActionResult BuscarPedidosParaModificacion(string CodCli, int NroPedido, string CodEstatus, string FechaDesde, string FechaHasta)
+        public async Task<IActionResult> BuscarPedidosParaModificacion(string CodCli, int NroPedido, string CodEstatus, string FechaDesde, string FechaHasta)
         {
             List<Orders> _pedidos = new List<Orders>();
             string viewContent = string.Empty;
@@ -518,19 +518,19 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Detalle(int IdOrden)
+        public async Task<IActionResult> Detalle(int IdOrden)
         {
             PedidosGeneradosViewModel _Modelo = new PedidosGeneradosViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/VerPedido");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/VerPedido");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _Modelo.Ordenes = new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", IdOrden, "", Convert.ToInt32(HttpContext.Session.GetString("idusuario")));
+                _Modelo.Ordenes = await new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", IdOrden, "", Convert.ToInt32(HttpContext.Session.GetString("idusuario")));
 
                 List<ListaGeneral> General = new List<ListaGeneral>();
                 //DATOS COMPLEMENTARIOS
@@ -561,15 +561,15 @@ namespace PedidosWebUpgrade.Web.Controllers
                 }
 
                 //CONSULTAR SEGUIMIENTO DE LA ORDEN
-                _Modelo.SeguimientoPedido.SeguimientoOrden = new PedidoRepository(_configVariables).ObtenerSeguimiento(IdOrden);
+                _Modelo.SeguimientoPedido.SeguimientoOrden = await new PedidoRepository(_configVariables).ObtenerSeguimiento(IdOrden);
                 if (_Modelo.SeguimientoPedido.SeguimientoOrden.Count > 0)
                 {
                     //CONSULTAR LOS ESTATUS
-                    _Modelo.SeguimientoPedido.EstatusOrden = new PedidoRepository(_configVariables).ObtenerEstatusOrden();
+                    _Modelo.SeguimientoPedido.EstatusOrden = await new PedidoRepository(_configVariables).ObtenerEstatusOrden();
                 }
 
                 //CONSULTAR EL HISTORICO
-                _Modelo.PedidosHistoricos = new PedidoRepository(_configVariables).ConsultarHistoricoPedidos(_Modelo.Ordenes.FirstOrDefault().IdOrderOriginal);
+                _Modelo.PedidosHistoricos = await new PedidoRepository(_configVariables).ConsultarHistoricoPedidos(_Modelo.Ordenes.FirstOrDefault().IdOrderOriginal);
 
             }
             catch (Exception e)
@@ -580,19 +580,19 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult DetalleModificacion(int IdOrden)
+        public async Task<IActionResult> DetalleModificacion(int IdOrden)
         {
             PedidosGeneradosViewModel _Modelo = new PedidosGeneradosViewModel();
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/VerPedido");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/VerPedido");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                _Modelo.Ordenes = new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", IdOrden, "", Convert.ToInt32(HttpContext.Session.GetString("idusuario")));
+                _Modelo.Ordenes = await new PedidoRepository(_configVariables).ConsultarPedidos("", "", "", IdOrden, "", Convert.ToInt32(HttpContext.Session.GetString("idusuario")));
 
                 List<ListaGeneral> General = new List<ListaGeneral>();
                 //DATOS COMPLEMENTARIOS
@@ -623,15 +623,15 @@ namespace PedidosWebUpgrade.Web.Controllers
                 }
 
                 //CONSULTAR SEGUIMIENTO DE LA ORDEN
-                _Modelo.SeguimientoPedido.SeguimientoOrden = new PedidoRepository(_configVariables).ObtenerSeguimiento(IdOrden);
+                _Modelo.SeguimientoPedido.SeguimientoOrden = await new PedidoRepository(_configVariables).ObtenerSeguimiento(IdOrden);
                 if (_Modelo.SeguimientoPedido.SeguimientoOrden.Count > 0)
                 {
                     //CONSULTAR LOS ESTATUS
-                    _Modelo.SeguimientoPedido.EstatusOrden = new PedidoRepository(_configVariables).ObtenerEstatusOrden();
+                    _Modelo.SeguimientoPedido.EstatusOrden = await new PedidoRepository(_configVariables).ObtenerEstatusOrden();
                 }
 
                 //CONSULTAR EL HISTORICO
-                _Modelo.PedidosHistoricos = new PedidoRepository(_configVariables).ConsultarHistoricoPedidos(_Modelo.Ordenes.FirstOrDefault().IdOrderOriginal);
+                _Modelo.PedidosHistoricos = await new PedidoRepository(_configVariables).ConsultarHistoricoPedidos(_Modelo.Ordenes.FirstOrDefault().IdOrderOriginal);
 
             }
             catch (Exception e)
@@ -642,11 +642,11 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Seguimiento()
+        public async Task<IActionResult> Seguimiento()
         {
 
             //PERMISOS DE USUARIO
-            List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Seguimiento");
+            List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Seguimiento");
             TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
             TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
             TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -656,23 +656,23 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Seguimiento(SeguimientoViewModel Modelo)
+        public async Task<IActionResult> Seguimiento(SeguimientoViewModel Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Seguimiento");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Seguimiento");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
                 //CONSULTAR SEGUIMIENTO DE LA ORDEN
-                Modelo.SeguimientoOrden = new PedidoRepository(_configVariables).ObtenerSeguimiento(Convert.ToInt32(Modelo.IdOrden));
+                Modelo.SeguimientoOrden = await new PedidoRepository(_configVariables).ObtenerSeguimiento(Convert.ToInt32(Modelo.IdOrden));
                 if (Modelo.SeguimientoOrden.Count > 0)
                 {
                     //CONSULTAR LOS ESTATUS
-                    Modelo.EstatusOrden = new PedidoRepository(_configVariables).ObtenerEstatusOrden();
+                    Modelo.EstatusOrden = await new PedidoRepository(_configVariables).ObtenerEstatusOrden();
                 }
 
 
@@ -686,7 +686,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult GenerarPDF(int nroorden, string ordernumber, short type)//1:Production Order, 2: Proforma
+        public async Task<IActionResult> GenerarPDF(int nroorden, string ordernumber, short type)//1:Production Order, 2: Proforma
         {
             try
             {
@@ -732,7 +732,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             int parTipo = tipo;
             if (tipo == 3)
                 parTipo = 2;
-            _Detalle = new PedidoRepository(_configVariables).ConsultarOrdenPdf(nroorden, parTipo);
+            _Detalle = new PedidoRepository(_configVariables).ConsultarOrdenPdf(nroorden, parTipo).Result;
             _Pedido = _Detalle.FirstOrDefault();
             byte[] bytes;
 
@@ -1094,12 +1094,12 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult CargarOpcionesF0005()
+        public async Task<IActionResult> CargarOpcionesF0005()
         {
             MotivosF0005 Model = new MotivosF0005();
             try
             {
-                Model.Motivos = new CestaRepository(_configVariables).ObtenerF0005("55", "RC");
+                Model.Motivos = new CestaRepository(_configVariables).ObtenerF0005("55", "RC").Result;
             }
             catch (Exception e)
             {
@@ -1114,7 +1114,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             bool _result = false;
             try
             {
-                _result = new PedidoRepository(_configVariables).EliminarPedido(IdOrden, IdMotivo, int.Parse(HttpContext.Session.GetString("idusuario")));
+                _result = new PedidoRepository(_configVariables).EliminarPedido(IdOrden, IdMotivo, int.Parse(HttpContext.Session.GetString("idusuario"))).Result;
 
             }
             catch (Exception e)
@@ -1125,12 +1125,12 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpGet()]
-        public IActionResult CargarOpcionesReactivacion()
+        public async Task<IActionResult> CargarOpcionesReactivacion()
         {
             MotivosF0005 Model = new MotivosF0005();
             try
             {
-                Model.Motivos = new CestaRepository(_configVariables).ObtenerF0005("55", "AC");
+                Model.Motivos = new CestaRepository(_configVariables).ObtenerF0005("55", "AC").Result;
             }
             catch (Exception e)
             {
@@ -1147,7 +1147,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             bool _resultemail = false;
             try
             {
-                var _resultQuery = new PedidoRepository(_configVariables).ReactivarPedido(IdOrden, IdMotivo, int.Parse(HttpContext.Session.GetString("idusuario")));
+                var _resultQuery = new PedidoRepository(_configVariables).ReactivarPedido(IdOrden, IdMotivo, int.Parse(HttpContext.Session.GetString("idusuario"))).Result;
                 foreach (var item in _resultQuery)
                 {
                     switch (item.Key)
@@ -1216,7 +1216,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             bool _result = false;
             try
             {
-                _result = new PedidoRepository(_configVariables).RecalcularPrecioOrden(IdOrden, int.Parse(HttpContext.Session.GetString("idusuario")));
+                _result = new PedidoRepository(_configVariables).RecalcularPrecioOrden(IdOrden, int.Parse(HttpContext.Session.GetString("idusuario"))).Result;
             }
             catch (Exception e)
             {

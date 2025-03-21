@@ -14,7 +14,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             _configVariables = configVariables;
         }
 
-        public List<F45520> ConsultarCabeceraListoPrecio()
+        public async Task<List<F45520>> ConsultarCabeceraListoPrecio()
         {
             lDato _ldato = new lDato(_configVariables);
             List<F45520> Lista = new List<F45520>();
@@ -30,7 +30,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Phpldesc", "phpldesc");
                 _ldato.Esquema.Add("Pheftj", "pheftj");
                 _ldato.Esquema.Add("Phcrcd", "phcrcd");
-                List_Response = _ldato.EjecutarReader(new F45520(), "PED_USP_CONSULTARCABECERALISTAPRECIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new F45520(), "PED_USP_CONSULTARCABECERALISTAPRECIO", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Lista;
         }
 
-        public List<F45521> ConsultarDetalleListaPrecio(string phdoco, string phdcto)
+        public async Task<List<F45521>> ConsultarDetalleListaPrecio(string phdoco, string phdcto)
         {
             lDato _ldato = new lDato(_configVariables);
             List<F45521> Lista = new List<F45521>();
@@ -61,7 +61,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Pduprc", "pduprc");
                 _ldato.Esquema.Add("Pdplcamt2", "pdplcamt2");
                 _ldato.Esquema.Add("Pdplcamt3", "pdplcamt3");
-                List_Response = _ldato.EjecutarReader(new F45521(), "PED_USP_CONSULTARDETALLELISTAPRECIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new F45521(), "PED_USP_CONSULTARDETALLELISTAPRECIO", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
             return Lista;
         }
 
-        public List<ListPreciosPrint> ConsultarDetallesReporteListaPrecios(string doco, string dcto, int IdUsuario)
+        public async Task<List<ListPreciosPrint>> ConsultarDetallesReporteListaPrecios(string doco, string dcto, int IdUsuario)
         {
             lDato _ldato = new lDato(_configVariables);
             List<ListPreciosPrint> Lista = new List<ListPreciosPrint>();
@@ -111,7 +111,7 @@ namespace PedidosWebUpgrade.Infrastructure.Repository
                 _ldato.Esquema.Add("Contact_4", "contact_4");
                 _ldato.Esquema.Add("List_Id", "list_id");
 
-                List_Response = _ldato.EjecutarReader(new ListPreciosPrint(), "PED_USP_IMPRIMIRLISTAPRECIO", _ldato.Parametros, _ldato.Esquema);
+                List_Response = await _ldato.EjecutarReader(new ListPreciosPrint(), "PED_USP_IMPRIMIRLISTAPRECIO", _ldato.Parametros, _ldato.Esquema);
                 Lista = List_Response.Valor;
             }
             catch (Exception ex)
