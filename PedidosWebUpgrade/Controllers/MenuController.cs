@@ -5,6 +5,7 @@ using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -33,13 +34,13 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Listar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Listar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = new MenuRepository(_configVariables).ObtenerMenu(0);
+                Modelo = await new MenuRepository(_configVariables).ObtenerMenu(0);
             }
             catch (Exception e)
             {
@@ -79,10 +80,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
                 if (IdMenu > 0)
                 {
-                    _Modelo = new MenuRepository(_configVariables).ObtenerMenu(IdMenu).FirstOrDefault();
+                    List<Menu> menus = await new MenuRepository(_configVariables).ObtenerMenu(IdMenu);
+                    _Modelo = menus.FirstOrDefault();
 
                 }
-                _Modelo.Padres = new MenuRepository(_configVariables).ObtenerMenu(0).Where(x => x.IdPadre == 0).Select(x => new ListaGeneral() { IdTipo = x.IdMenu, Descripcion = x.Descripcion }).ToList();
+
+                List<Menu> menus2 = await new MenuRepository(_configVariables).ObtenerMenu(0);
+                _Modelo.Padres = menus2.Where(x => x.IdPadre == 0).Select(x => new ListaGeneral() { IdTipo = x.IdMenu, Descripcion = x.Descripcion }).ToList();
                 _Modelo.Padres.Add(new ListaGeneral() { IdTipo = 0, Descripcion = "SIN PADRE" });
 
             }
@@ -102,7 +106,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -111,7 +115,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 if (ModelState.IsValid)
                 {
 
-                    var _resultQuery = new MenuRepository(_configVariables).ActualizarMenu(Modelo);
+                    var _resultQuery = await new MenuRepository(_configVariables).ActualizarMenu(Modelo);
                     foreach (var item in _resultQuery)
                     {
                         switch (item.Key)
@@ -139,7 +143,8 @@ namespace PedidosWebUpgrade.Web.Controllers
                             break;
                     }
                     //LLENAR LISTA DE PADRES
-                    Modelo.Padres = new MenuRepository(_configVariables).ObtenerMenu(0).Where(x => x.IdPadre == 0).Select(x => new ListaGeneral() { IdTipo = x.IdMenu, Descripcion = x.Descripcion }).ToList();
+                    List<Menu> menus = await new MenuRepository(_configVariables).ObtenerMenu(0);
+                    Modelo.Padres = menus.Where(x => x.IdPadre == 0).Select(x => new ListaGeneral() { IdTipo = x.IdMenu, Descripcion = x.Descripcion }).ToList();
                     Modelo.Padres.Add(new ListaGeneral() { IdTipo = 0, Descripcion = "SIN PADRE" });
 
                 }

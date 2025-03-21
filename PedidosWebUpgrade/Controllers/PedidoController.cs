@@ -43,7 +43,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Crear");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Pedido/Crear");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -59,23 +59,27 @@ namespace PedidosWebUpgrade.Web.Controllers
                 }
 
 
+                List<ListaGeneral> general = await new EmpresaRepository(_configVariables).ObtenerSucursales(HttpContext.Session.GetString("idvendedor"));
+                Modelo.Sucursales = general.Select(x => new ListaGeneral() { Codigo = x.Codigo, Descripcion = x.Codigo + " - " + x.Descripcion }).ToList();
 
-                Modelo.Sucursales = new EmpresaRepository(_configVariables).ObtenerSucursales(HttpContext.Session.GetString("idvendedor")).Select(x => new ListaGeneral() { Codigo = x.Codigo, Descripcion = x.Codigo + " - " + x.Descripcion }).ToList();
-                Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), (Modelo.CodigoSucursal == "" ? Modelo.Sucursales.First().Codigo : Modelo.CodigoSucursal), 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
-                Modelo.Categorias = new ProductoRepository(_configVariables).ObtenerCategorias().Select(x => new ListaGeneral() { Codigo = x.Codigo, Descripcion = x.Codigo + " - " + x.Descripcion }).ToList();
+                List<Customer> customer = await new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), (Modelo.CodigoSucursal == "" ? Modelo.Sucursales.First().Codigo : Modelo.CodigoSucursal), 2);
+                Modelo.Clientes = customer.Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
 
-
-
+                List<ListaGeneral> general2 = await new ProductoRepository(_configVariables).ObtenerCategorias();
+                Modelo.Categorias = general2.Select(x => new ListaGeneral() { Codigo = x.Codigo, Descripcion = x.Codigo + " - " + x.Descripcion }).ToList();
+                
                 Modelo.Encabezado = await new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(0, (Modelo.CodigoCliente == "" ? Modelo.Clientes.FirstOrDefault().Codigo : Modelo.CodigoCliente), HttpContext.Session.GetString("idvendedor"));
+                Modelo.CabecListaPrecios = new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().Result.Select(x => new ListaGeneral() { Codigo = x.Codigo.Trim(), Descripcion = x.Descripcion.Trim() }).ToList();
 
-                Modelo.CabecListaPrecios = new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().Select(x => new ListaGeneral() { Codigo = x.Codigo.Trim(), Descripcion = x.Descripcion.Trim() }).ToList();
-                Modelo.ShipTo = new ClienteRepository(_configVariables).ObtenerShipTo(null, null, 2, null).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
+                List<Customer> customer2 = await new ClienteRepository(_configVariables).ObtenerShipTo(null, null, 2, null);
+                Modelo.ShipTo = customer2.Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
 
-                Modelo.Productos = new ProductoRepository(_configVariables).ObtenerProductos("", (Modelo.CodigoSucursal == "" ? Modelo.Sucursales.FirstOrDefault().Codigo : Modelo.CodigoSucursal),
+                List<Producto> productos = await new ProductoRepository(_configVariables).ObtenerProductos("", (Modelo.CodigoSucursal == "" ? Modelo.Sucursales.FirstOrDefault().Codigo : Modelo.CodigoSucursal),
                                                                              (Modelo.CodigoCategoria == "" ? Modelo.Categorias.FirstOrDefault().Codigo : Modelo.CodigoCategoria),
                                                                              (Modelo.CodigoCliente == "" ? Modelo.Clientes.FirstOrDefault().Codigo : Modelo.CodigoCliente),
                                                                              (Modelo.CodigoCabecListaPrecios == "" ? Modelo.CabecListaPrecios.FirstOrDefault().Codigo : Modelo.CodigoCabecListaPrecios)
-                                                                             ).ToList();
+                                                                             );
+                Modelo.Productos = productos.ToList();
                 Modelo.TipoPedido = TipoPedido;
 
                 if (Modelo.Encabezado == null)
@@ -92,12 +96,14 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpGet()]
-        public JsonResult ObtenerCustomerCPGP(string IdCliente)
+        public async Task<JsonResult> ObtenerCustomerCPGP(string IdCliente)
         {
             string CPGP = string.Empty;
             try
             {
-                Customer Cliente = new ClienteRepository(_configVariables).ObtenerClientes(null, null, 2).Find(x => x.CustomerId == IdCliente);
+                List<Customer> customers = await new ClienteRepository(_configVariables).ObtenerClientes(null, null, 2);
+
+                Customer Cliente = customers.Find(x => x.CustomerId == IdCliente);
                 if (Cliente != null)
                 {
                     CPGP = !string.IsNullOrWhiteSpace(Cliente.IdListaPrecio) ? Cliente.IdListaPrecio.Trim() : string.Empty;
@@ -117,14 +123,16 @@ namespace PedidosWebUpgrade.Web.Controllers
         /// <param name="CodCat">string</param>
         /// <returns>PartialView</returns>
         [HttpPost()]
-        public JsonResult BuscarProductos(string CodSuc, string CodCat, string CodCli, string CodListPrecio)
+        public async Task<JsonResult> BuscarProductos(string CodSuc, string CodCat, string CodCli, string CodListPrecio)
         {
             List<Producto> _Productos = new List<Producto>();
             EncabezadoPedido _Encabezado = new EncabezadoPedido();
             string viewContent = string.Empty;
             try
             {
-                _Productos = new ProductoRepository(_configVariables).ObtenerProductos("", CodSuc, CodCat, CodCli, CodListPrecio).ToList();
+                List<Producto> productos = await new ProductoRepository(_configVariables).ObtenerProductos("", CodSuc, CodCat, CodCli, CodListPrecio);
+
+                _Productos = productos.ToList();
                 _Encabezado = new PedidoRepository(_configVariables).ObtenerEncabezadoOrden(0, CodCli, HttpContext.Session.GetString("idvendedor")).Result;
                 if (_Encabezado == null)
                 {
@@ -145,7 +153,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public JsonResult ConsultarProductosCesta(int IdOrden, string CodCli, string IdListaPrecio)
+        public async Task<JsonResult> ConsultarProductosCesta(int IdOrden, string CodCli, string IdListaPrecio)
         {
             List<Producto> _Productos = new List<Producto>();
             EncabezadoPedido _Encabezado = new EncabezadoPedido();
@@ -169,7 +177,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
-        public JsonResult ConsultarProductosSeleccionados(int IdOrden)
+        public async Task<JsonResult> ConsultarProductosSeleccionados(int IdOrden)
         {
             List<Producto> _Productos = new List<Producto>();
             string viewContent = string.Empty;
@@ -245,7 +253,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                 dynamic DatosCesta = JsonSerializer.Deserialize<Object>(ParamCesta);
 
 
-                _result = new PedidoRepository(_configVariables).ProcesarOrden(IdOrden, DatosCesta["condicion"], int.Parse(DatosCesta["descuento"]), DatosCesta["fechapedido"],
+                _result = await new PedidoRepository(_configVariables).ProcesarOrden(IdOrden, DatosCesta["condicion"], int.Parse(DatosCesta["descuento"]), DatosCesta["fechapedido"],
                                                                 DatosCesta["fecharequerida"], DatosCesta["Observaciones"], DatosCesta["montototal"], DatosCesta["montodscto"],
                                                                 DatosCesta["prepagado"], DatosCesta["tasanegociacion"], DatosCesta["carrier"], DatosCesta["puertodescarga"],
                                                                 DatosCesta["iconterms"], "", DatosCesta["tiempollegada"], DatosCesta["ordenprint"], Convert.ToInt32(HttpContext.Session.GetString("idusuario")),
@@ -330,12 +338,13 @@ namespace PedidosWebUpgrade.Web.Controllers
         /// <returns>Json</returns>
         [Authorize()]
         [HttpPost()]
-        public JsonResult ObtenerDescuestoComercial(int IdOrden, float Porcentaje)
+        public async Task<JsonResult> ObtenerDescuestoComercial(int IdOrden, float Porcentaje)
         {
             List<Descuento> Descuentos = new List<Descuento>();
             try
             {
-                Descuentos = new PedidoRepository(_configVariables).ObtenerCalculoDescuentoComercial(IdOrden, Porcentaje).Select(x => new Descuento() { BaseImponibleCesta = x.BaseImponibleCesta, ImpuestoCesta = x.ImpuestoCesta, DescuentoCesta = x.DescuentoCesta, TotalPagarCesta = x.TotalPagarCesta }).ToList();
+                List<Descuento> descuentos = await new PedidoRepository(_configVariables).ObtenerCalculoDescuentoComercial(IdOrden, Porcentaje);
+                Descuentos = descuentos.Select(x => new Descuento() { BaseImponibleCesta = x.BaseImponibleCesta, ImpuestoCesta = x.ImpuestoCesta, DescuentoCesta = x.DescuentoCesta, TotalPagarCesta = x.TotalPagarCesta }).ToList();
             }
             catch (Exception e)
             {
@@ -346,13 +355,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public JsonResult ObtenerClientes(string CodSuc)
+        public async Task<JsonResult> ObtenerClientes(string CodSuc)
         {
             List<ListaGeneral> Clientes = new List<ListaGeneral>();
             try
             {
-                Clientes = new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), CodSuc, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
-
+                List<Customer> customer = await new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), CodSuc, 2);
+                Clientes = customer.Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
             }
             catch (Exception e)
             {
@@ -363,12 +372,13 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         [Authorize()]
         [HttpPost()]
-        public JsonResult ObtenerContadorAnnoPaisAjax(string CodPais)
+        public async Task<JsonResult> ObtenerContadorAnnoPaisAjax(string CodPais)
         {
             List<ListaGeneral> Contadores = new List<ListaGeneral>();
             try
             {
-                Contadores = new PedidoRepository(_configVariables).ConsultarContadoresAnnoPais(CodPais).Select(x => new ListaGeneral() { Codigo = x.IdTipo.ToString(), Descripcion = x.Descripcion.Trim() }).ToList();
+                List<ListaGeneral> generals = await new PedidoRepository(_configVariables).ConsultarContadoresAnnoPais(CodPais);
+                Contadores = generals.Select(x => new ListaGeneral() { Codigo = x.IdTipo.ToString(), Descripcion = x.Descripcion.Trim() }).ToList();
             }
             catch (Exception e)
             {
@@ -399,11 +409,15 @@ namespace PedidosWebUpgrade.Web.Controllers
 
 
                 _Modelo = new PedidosGeneradosViewModel { CodigoCliente = CodCli, CodigoEstatus = CodEstatus, FechaDesde = FechaDesde, FechaHasta = FechaHasta, NumeroPedido = NroPedido };
-                _Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), null, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
+
+                List<Customer> customers = await new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), null, 2);
+                _Modelo.Clientes = customers.Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
                 _Modelo.Clientes.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
                 _Modelo.Estatus = await new PedidoRepository(_configVariables).ObtenerEstatus();
                 _Modelo.Estatus.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
-                _Modelo.Ordenes = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, Convert.ToInt32(NroPedido), CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
+
+                List<Orders> orders = await new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, Convert.ToInt32(NroPedido), CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario")));
+                _Modelo.Ordenes = orders.GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
             }
             catch (Exception e)
             {
@@ -433,11 +447,15 @@ namespace PedidosWebUpgrade.Web.Controllers
                 TempData["FechaHasta"] = FechaHasta;
 
                 _Modelo = new PedidosGeneradosViewModel { CodigoCliente = CodCli, CodigoEstatus = CodEstatus, FechaDesde = FechaDesde, FechaHasta = FechaHasta, NumeroPedido = NroPedido };
-                _Modelo.Clientes = new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), null, 2).Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
+
+                List<Customer> customers = await new ClienteRepository(_configVariables).ObtenerClientes(HttpContext.Session.GetString("idvendedor"), null, 2);
+                _Modelo.Clientes = customers.Select(x => new ListaGeneral() { Codigo = x.CustomerId, Descripcion = x.CustomerId + " - " + x.Name }).ToList();
                 _Modelo.Clientes.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
                 _Modelo.Estatus = await new PedidoRepository(_configVariables).ObtenerEstatus();
                 _Modelo.Estatus.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "TODOS" });
-                _Modelo.Ordenes = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, Convert.ToInt32(NroPedido), CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
+
+                List<Orders> orders = await new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, Convert.ToInt32(NroPedido), CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario")));
+                _Modelo.Ordenes = orders.GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
             }
             catch (Exception e)
             {
@@ -469,7 +487,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
-                _pedidos = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, NroPedido, CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
+                _pedidos = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, NroPedido, CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).Result.GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
                 viewContent = ConvertViewToString("_Pedidos", _pedidos);
 
                 //GUARDAR LOS VALORES DE BUSQUEDA
@@ -497,7 +515,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
-                _pedidos = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, NroPedido, CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
+                _pedidos = new PedidoRepository(_configVariables).ConsultarPedidos(CodCli, FechaDesde, FechaHasta, NroPedido, CodEstatus, Convert.ToInt32(HttpContext.Session.GetString("idusuario"))).Result.GroupBy(a => a.IdOrder).Select(g => g.First()).ToList();
                 viewContent = ConvertViewToString("_PedidosConsulta", _pedidos);
 
                 //GUARDAR LOS VALORES DE BUSQUEDA
@@ -536,27 +554,27 @@ namespace PedidosWebUpgrade.Web.Controllers
                 //DATOS COMPLEMENTARIOS
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdCarrier))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "CR").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdCarrier).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "CR").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdCarrier).ToList();
                     _Modelo.Ordenes.FirstOrDefault().Carrier = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdPuertoDescarga))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "PS").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdPuertoDescarga).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "PS").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdPuertoDescarga).ToList();
                     _Modelo.Ordenes.FirstOrDefault().PuertoDescarga = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdIncoTerms))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("42", "FR").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdIncoTerms).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("42", "FR").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdIncoTerms).ToList();
                     _Modelo.Ordenes.FirstOrDefault().IncoTerms = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdRef001))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "00").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdRef001).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "00").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdRef001).ToList();
                     _Modelo.Ordenes.FirstOrDefault().Referencia001 = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().CodigoModTransporte))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "TM").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().CodigoModTransporte).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "TM").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().CodigoModTransporte).ToList();
                     _Modelo.Ordenes.FirstOrDefault().ModTransporte = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
 
@@ -598,27 +616,27 @@ namespace PedidosWebUpgrade.Web.Controllers
                 //DATOS COMPLEMENTARIOS
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdCarrier))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "CR").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdCarrier).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "CR").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdCarrier).ToList();
                     _Modelo.Ordenes.FirstOrDefault().Carrier = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdPuertoDescarga))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "PS").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdPuertoDescarga).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("55", "PS").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdPuertoDescarga).ToList();
                     _Modelo.Ordenes.FirstOrDefault().PuertoDescarga = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdIncoTerms))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("42", "FR").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdIncoTerms).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("42", "FR").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdIncoTerms).ToList();
                     _Modelo.Ordenes.FirstOrDefault().IncoTerms = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().IdRef001))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "00").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdRef001).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "00").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().IdRef001).ToList();
                     _Modelo.Ordenes.FirstOrDefault().Referencia001 = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
                 if (!string.IsNullOrEmpty(_Modelo.Ordenes.FirstOrDefault().CodigoModTransporte))
                 {
-                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "TM").Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().CodigoModTransporte).ToList();
+                    General = new CestaRepository(_configVariables).ObtenerF0005("00", "TM").Result.Where(x => x.Codigo == _Modelo.Ordenes.FirstOrDefault().CodigoModTransporte).ToList();
                     _Modelo.Ordenes.FirstOrDefault().ModTransporte = (General.Count() == 0) ? string.Empty : General.FirstOrDefault().Descripcion;
                 }
 

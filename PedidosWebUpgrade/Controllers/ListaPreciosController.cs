@@ -38,7 +38,8 @@ namespace PedidosWebUpgrade.Web.Controllers
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().ToList();
+                List<F45520> lista = await new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio();
+                Modelo = lista.ToList();
             }
             catch (Exception e)
             {
@@ -60,8 +61,11 @@ namespace PedidosWebUpgrade.Web.Controllers
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo.CabListPrecios = await new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio().FirstOrDefault();
-                Modelo.ListDetListPrecios = await new ListaPreciosRepository(_configVariables).ConsultarDetalleListaPrecio(phdoco, phdcto).ToList();
+                List<F45520> lista = await new ListaPreciosRepository(_configVariables).ConsultarCabeceraListoPrecio();
+                Modelo.CabListPrecios = lista.FirstOrDefault();
+
+                List<F45521> lista2 = await new ListaPreciosRepository(_configVariables).ConsultarDetalleListaPrecio(phdoco, phdcto);
+                Modelo.ListDetListPrecios = lista2.ToList();
             }
             catch (Exception e)
             {

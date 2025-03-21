@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;

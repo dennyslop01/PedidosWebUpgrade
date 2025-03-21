@@ -25,7 +25,8 @@ namespace PedidosWebUpgrade.Web.Controllers
         public async Task<IActionResult> IniciarSesion()
         {
             //CONSULTAR DATOS DE LA EMPRESA
-            HttpContext.Session.SetString("empresa", new EmpresaRepository(_configVariables).ObtenerEmpresa().FirstOrDefault().NombreCorto);
+            List<Compannia> companas = await new EmpresaRepository(_configVariables).ObtenerEmpresa();
+            HttpContext.Session.SetString("empresa", companas.FirstOrDefault().NombreCorto);
 
             ClaimsPrincipal principal = HttpContext.User;
             if (principal.Identity != null)
@@ -95,8 +96,9 @@ namespace PedidosWebUpgrade.Web.Controllers
                             HttpContext.Session.SetString("idusuario", _idUsuario.ToString());
                             HttpContext.Session.SetString("idvendedor", _Idvendedor.ToString());
 
-                            //OBTENER DATOS DEL USUARIO-- 
-                            Usuario _Usuario = new UsuarioRepository(_configVariables).ObtenerUsuario(_idUsuario).FirstOrDefault();
+                            //OBTENER DATOS DEL USUARIO--
+                            List<Usuario> usuarios = await new UsuarioRepository(_configVariables).ObtenerUsuario(_idUsuario);
+                            Usuario _Usuario = usuarios.FirstOrDefault();
 
                             //ASIGNAR DATOS  DEL USUARIO EN SESSION
                             HttpContext.Session.SetString("nombreusuario", _Usuario.PrimerApellido);
@@ -104,7 +106,8 @@ namespace PedidosWebUpgrade.Web.Controllers
                             HttpContext.Session.SetString("tipousuario", _Usuario.TipoUsuario);
 
                             //CONSULTAR DATOS DE LA EMPRESA
-                            HttpContext.Session.SetString("empresa", new EmpresaRepository(_configVariables).ObtenerEmpresa().FirstOrDefault().NombreCorto);
+                            List<Compannia> companias = await new EmpresaRepository(_configVariables).ObtenerEmpresa();
+                            HttpContext.Session.SetString("empresa", companias.FirstOrDefault().NombreCorto);
 
                             //FormsAuthentication.SetAuthCookie(Model.Cuenta, true);
                             return RedirectToAction("Index", "Home");
