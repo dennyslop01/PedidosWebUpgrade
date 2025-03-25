@@ -32,7 +32,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             if (principal.Identity != null)
             {
                 if (principal.Identity.IsAuthenticated)
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Inicio", "Principal");
             }
 
             return View(new UsuarioLogin());
@@ -81,7 +81,8 @@ namespace PedidosWebUpgrade.Web.Controllers
                         case 1:
                             List<Claim> c = new List<Claim>()
                             {
-                                new Claim(ClaimTypes.NameIdentifier, Model.Cuenta)
+                                new Claim(ClaimTypes.NameIdentifier, Model.Cuenta),
+                                new Claim(ClaimTypes.UserData, _idUsuario.ToString())
                             };
 
                             ClaimsIdentity ci = new (c, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -110,7 +111,7 @@ namespace PedidosWebUpgrade.Web.Controllers
                             HttpContext.Session.SetString("empresa", companias.FirstOrDefault().NombreCorto);
 
                             //FormsAuthentication.SetAuthCookie(Model.Cuenta, true);
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Inicio", "Principal");
 
                         case 2:
                             ModelState.AddModelError(string.Empty, "USUARIO NO EXISTE!");

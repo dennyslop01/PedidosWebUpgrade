@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PedidosWebUpgrade.Models;
+using Microsoft.IdentityModel.Tokens;
+using PedidosWebUpgrade.Domain.Entities;
+using PedidosWebUpgrade.Infrastructure.Repository;
+using PedidosWebUpgrade.Infrastructure.Utilities;
+using Shyjus.BrowserDetection;
+using System.Security.Claims;
 
 namespace PedidosWebUpgrade.Controllers;
 
@@ -11,15 +17,40 @@ namespace PedidosWebUpgrade.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly ConfigVariables _configVariables;
+    private readonly IBrowserDetector _browserDetector;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ConfigVariables configVariables, IBrowserDetector browserDetector)
     {
         _logger = logger;
+        _configVariables = configVariables;
+        _browserDetector = browserDetector;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        ClaimsPrincipal principal = HttpContext.User;
+        if (principal.Identity != null)
+        {
+            if (!principal.Identity.IsAuthenticated)
+                return RedirectToAction("IniciarSesion", "Login");
+        }
+
+        List<Menu> Model = new List<Menu>();
+        try
+        {
+            int idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
+
+            Model = await new MenuRepository(_configVariables).ObtenerMenuUsuario(idUsuario);
+            //Model = await new MenuRepository(_configVariables).ObtenerMenuUsuario(int.Parse(HttpContext.Session.GetString("idusuario")));
+        }
+        catch (Exception e)
+        {
+            ModelState.AddModelError(string.Empty, "Lo Sentimos, ha ocurrido un error!");
+            CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory, "MenuController", "ChildActionOnly-MenuPrincipal()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
+        }
+
+        return View(Model);
     }
 
     public IActionResult Privacy()
@@ -33,18 +64,6 @@ public class HomeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    /// <summary>
-    /// GET: Cerrar sesión
-    /// </summary>
-    /// <returns>View("Login")</returns>
-    [HttpGet()]
-    public async Task<IActionResult> Cerrar()
-    {
-        HttpContext.Session.Clear();
-        Response.Clear();
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        //FormsAuthentication.SignOut();
-        return RedirectToAction("Index");
-    }
+    
 
 }

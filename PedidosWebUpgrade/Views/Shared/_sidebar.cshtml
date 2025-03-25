@@ -1,0 +1,111 @@
+﻿@model List<PedidosWebUpgrade.Domain.Entities.Menu>
+
+<!-- ========== App Menu ========== -->
+<div class="app-menu navbar-menu">
+    <!-- LOGO -->
+    <div class="navbar-brand-box">
+        <!-- Dark Logo-->
+        <a href="@Url.Action("Index", "Dashboard")" class="logo logo-dark">
+            <span class="logo-sm">
+                <img src="~/assets/images/logo-sm.png" alt="" height="22">
+            </span>
+            <span class="logo-lg">
+                <img src="~/assets/images/logo-dark.png" alt="" height="17">
+            </span>
+        </a>
+        <!-- Light Logo-->
+        <a href="@Url.Action("Index", "Dashboard")" class="logo logo-light">
+            <span class="logo-sm">
+                <img src="~/assets/images/logo-sm.png" alt="" height="22">
+            </span>
+            <span class="logo-lg">
+                <img src="~/assets/images/logo-light.png" alt="" height="17">
+            </span>
+        </a>
+        <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+            <i class="ri-record-circle-line"></i>
+        </button>
+    </div>
+
+
+    <div id="scrollbar">
+        <div class="container-fluid">
+
+            <div id="two-column-menu">
+            </div>
+            <ul class="navbar-nav" id="navbar-nav">
+                @foreach (var parentMenu in Model.Where(p => p.IdPadre == 0).OrderBy(x => x.Orden))
+                {
+
+                    if (!string.IsNullOrEmpty(parentMenu.Url))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="@Url.Content(parentMenu.Url)">
+                                <i class="ri-@parentMenu.Icon.Replace("fa fa-", string.Empty)-line"></i> <span data-key="@parentMenu.IdMenu">@parentMenu.Descripcion</span>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#sidebar-@parentMenu.IdMenu" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebar-@parentMenu.IdMenu">
+                                @if (@parentMenu.Icon == "fa fa-address-book")
+                                {
+                                    <i class="ri-user-line"></i>
+                                }
+                                @if (@parentMenu.Icon == "fas fa-users")
+                                {
+                                    <i class="ri-group-line"></i>
+                                }
+                                @if (@parentMenu.Icon == "fa fa-box-open")
+                                {
+                                    <i class="ri-instance-line"></i>
+                                }
+                                @if (@parentMenu.Icon == "fa-chart-bar")
+                                {
+                                    <i class="ri-bar-chart-line"></i>
+                                }
+                                @if (@parentMenu.Icon == "fas fa-cog")
+                                {
+                                    <i class="ri-settings-line"></i>
+                                }
+
+                                <span data-key="@parentMenu.IdMenu">@parentMenu.Descripcion</span><br>
+                            </a>
+                            <div class="collapse menu-dropdown" id="sidebar-@parentMenu.IdMenu">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        @if (Model.Count(p => p.IdPadre == parentMenu.IdMenu) > 0)
+                                        {
+                                            <ul class="nav nav-children">
+                                                @foreach (var childMenu in Model.Where(p => p.IdPadre == parentMenu.IdMenu).OrderBy(x => x.Orden))
+                                                {
+                                                    <li>
+                                                        <a href="@Url.Content(childMenu.Url)" class="nav-link" data-key="t-one-page"> @childMenu.Descripcion </a>
+                                                    </li><br />
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                }
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="@Url.Action("Cerrar", "Principal")">
+                        <i class="ri-shut-down-line"></i> <span data-key="1000">Cerrar sesión</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+
+    <div class="sidebar-background"></div>
+</div>
+<!-- Left Sidebar End -->
+<!-- Vertical Overlay-->
+<div class="vertical-overlay"></div>
