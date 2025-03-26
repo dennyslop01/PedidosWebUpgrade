@@ -3,6 +3,7 @@ using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Security.Claims;
 
 namespace PedidosWebUpgrade.Web.Components
 {
@@ -18,12 +19,16 @@ namespace PedidosWebUpgrade.Web.Components
             _browserDetector = browserDetector;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke(int numberOfItems)
         {
             List<Menu> Model = new List<Menu>();
             try
             {
-                Model = await new MenuRepository(_configVariables).ObtenerMenuUsuario(int.Parse(HttpContext.Session.GetString("idusuario")));
+                ClaimsPrincipal principal = HttpContext.User;
+
+                int idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
+
+                Model = new MenuRepository(_configVariables).ObtenerMenuUsuario(idUsuario).Result;
             }
             catch (Exception e)
             {
@@ -32,7 +37,7 @@ namespace PedidosWebUpgrade.Web.Components
             }
             ;
 
-            return View("_MenuPrincipal", Model);
+            return View(Model);
         }
     }
 }

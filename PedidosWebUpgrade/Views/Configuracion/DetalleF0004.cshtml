@@ -1,0 +1,71 @@
+﻿@{
+    @model PedidosWebUpgrade.Domain.Entities.F0004
+    ViewBag.Title = "Maestros";
+    ViewBag.pTitle = "Ficha F0004";
+    ViewBag.pageTitle = "Maestros";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box accordion-secondary" id="accordionBordered">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="accordionborderedExample1">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accor_borderedExamplecollapse1" aria-expanded="true" aria-controls="accor_borderedExamplecollapse1">
+                Datos básicos
+            </button>
+        </h2>
+        <div id="accor_borderedExamplecollapse1" class="accordion-collapse collapse show" aria-labelledby="accordionborderedExample1" data-bs-parent="#accordionBordered">
+            <div class="accordion-body">
+                @using (Html.BeginForm("DetalleF0004", "Configuracion", FormMethod.Post, new { @class = "form-horizontal form-bordered" }))
+                {
+                    <div class="row">
+                        <div class="col-12 m-2">
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="dtsy" class="form-label">Código del producto:</label>
+                                        <input type="text" class="form-control" asp-for="dtsy" placeholder="Ingrese código del producto">
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="dtrt" class="form-label">Código definido por el usuario:</label>
+                                        <input type="text" class="form-control" asp-for="dtrt" placeholder="Ingrese código definido por usuario">
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="dtdl01" class="form-label">Descripción:</label>
+                                        <textarea class="form-control" asp-for="dtdl01" rows="3" placeholder="Ingrese descripción"></textarea>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                    <div class="row">
+                        <div class="col-12 m-2">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <div>
+                                        <button type="button"
+                                           title="Guardar" id="btnguardar"
+                                           class="btn btn-success btn-label waves-effect waves-light">
+                                            <i class="ri-save-line label-icon align-middle fs-16 me-2"></i> Guardar
+                                        </button>
+                                        <button type="button"
+                                                title="Cancelar" id="btncancel"
+                                                class="btn btn-danger btn-label waves-effect waves-light">
+                                            <i class="ri-close-circle-line label-icon align-middle fs-16 me-2"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                }
+            </div>
+        </div>
+    </div>
+</div>

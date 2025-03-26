@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PedidosWebUpgrade.Domain.Entities;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Security.Claims;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -23,7 +26,14 @@ namespace PedidosWebUpgrade.Web.Controllers
         // GET: Principal
         public async Task<IActionResult> Inicio()
         {
+            ClaimsPrincipal principal = HttpContext.User;
+            if (principal.Identity != null)
+            {
+                if (!principal.Identity.IsAuthenticated)
+                    return RedirectToAction("IniciarSesion", "Login");
+            }
 
+            List<Menu> Model = new List<Menu>();
             try
             {
                 //PERMISOS DE USUARIO
@@ -39,6 +49,20 @@ namespace PedidosWebUpgrade.Web.Controllers
             }
 
             return View();
+        }
+
+        /// <summary>
+        /// GET: Cerrar sesión
+        /// </summary>
+        /// <returns>View("Login")</returns>
+        [HttpGet()]
+        public async Task<IActionResult> Cerrar()
+        {
+            HttpContext.Session.Clear();
+            Response.Clear();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            //FormsAuthentication.SignOut();
+            return RedirectToAction("Inicio");
         }
     }
 }

@@ -8,6 +8,7 @@ using PedidosWebUpgrade.Domain.ViewModels;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PedidosWebUpgrade.Web.Controllers
@@ -282,21 +283,25 @@ namespace PedidosWebUpgrade.Web.Controllers
         [HttpGet()]
         public async Task<IActionResult> ConsultarF0004()
         {
-            List<F0004> Modelo = new List<F0004>();
+            ClaimsPrincipal principal = HttpContext.User;
+            if (principal.Identity != null)
+            {
+                if (!principal.Identity.IsAuthenticated)
+                    return RedirectToAction("IniciarSesion", "Login");
+            }
 
+            List<F0004> Modelo = new List<F0004>();
             try
             {
+                int idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(idUsuario, "Configuracion/ConsultarF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-
                 Modelo = await new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null);
-
-
             }
             catch (Exception e)
             {
