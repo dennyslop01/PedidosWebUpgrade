@@ -72,9 +72,14 @@
                                                             <a href="@Url.Action("DetalleF0004","Configuracion", new { dtsy = item.dtsy , dtrt = item.dtrt })" class="link-success fs-15" data-authorization="authorization" data-crud="read" title="Ver registro" id="btnread">
                                                                 <i class="ri-edit-2-line"></i>
                                                             </a>
-                                                            <span class="icon-trash delete-row" data-authorization="authorization" data-crud="delete" title="Eliminar registro" id="btndelete">
+                                                            <a href="@Url.Action("EliminarF0004","Configuracion", new { dtsy = item.dtsy , dtrt = item.dtrt })"
+                                                                class="text-danger ml-1" onclick="return confirm('¿Está seguro que desea eliminar este registro?')"><i class="ri-delete-bin-line"></i></a>
+
+
+
+                                                            @* <span class="icon-trash delete-row" data-authorization="authorization" data-crud="delete" title="Eliminar registro" id="btndelete">
                                                                 <i class="ri-delete-bin-line"></i>
-                                                            </span>
+                                                            </span> *@
                                                             @* <a href="javascript:void(0);" class="link-danger fs-15"><i class="ri-delete-bin-line"></i></a> *@
                                                         </div>
                                                     </td>

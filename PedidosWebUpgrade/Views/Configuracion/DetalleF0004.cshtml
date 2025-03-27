@@ -14,15 +14,19 @@
         </h2>
         <div id="accor_borderedExamplecollapse1" class="accordion-collapse collapse show" aria-labelledby="accordionborderedExample1" data-bs-parent="#accordionBordered">
             <div class="accordion-body">
-                @using (Html.BeginForm("DetalleF0004", "Configuracion", FormMethod.Post, new { @class = "form-horizontal form-bordered" }))
-                {
+                <form class="row g-lg-3 needs-validation" novalidate asp-action="DetalleF0004" method="post">
+                @* @using (Html.BeginForm("DetalleF0004", "Configuracion", FormMethod.Post, new { @class = "form-horizontal form-bordered" }))
+                { *@
                     <div class="row">
                         <div class="col-12 m-2">
                             <div class="row">
                                 <div class="col-lg-5 m-1">
                                     <div>
                                         <label asp-for="dtsy" class="form-label">Código del producto:</label>
-                                        <input type="text" class="form-control" asp-for="dtsy" placeholder="Ingrese código del producto">
+                                        <input type="text" class="form-control" asp-for="dtsy" placeholder="Ingrese código del producto" required maxlength="5">
+                                        <section class="invalid-tooltip">
+                                            Código del producto requerido
+                                        </section>
                                     </div>
                                 </div><!-- end col -->
                             </div><!-- end row -->
@@ -30,7 +34,10 @@
                                 <div class="col-lg-5 m-1">
                                     <div>
                                         <label asp-for="dtrt" class="form-label">Código definido por el usuario:</label>
-                                        <input type="text" class="form-control" asp-for="dtrt" placeholder="Ingrese código definido por usuario">
+                                        <input type="text" class="form-control" asp-for="dtrt" placeholder="Ingrese código definido por usuario" required maxlength="5">
+                                        <section class="invalid-tooltip">
+                                            Código definido por el usuario requerido
+                                        </section>
                                     </div>
                                 </div><!-- end col -->
                             </div><!-- end row -->
@@ -38,7 +45,10 @@
                                 <div class="col-lg-5 m-1">
                                     <div>
                                         <label asp-for="dtdl01" class="form-label">Descripción:</label>
-                                        <textarea class="form-control" asp-for="dtdl01" rows="3" placeholder="Ingrese descripción"></textarea>
+                                        <textarea class="form-control" asp-for="dtdl01" rows="3" placeholder="Ingrese descripción" required></textarea>
+                                        <section class="invalid-tooltip">
+                                            Descripción requerido
+                                        </section>
                                     </div>
                                 </div><!-- end col -->
                             </div><!-- end row -->
@@ -49,22 +59,42 @@
                             <div class="row">
                                 <div class="col-lg-5">
                                     <div>
-                                        <button type="button"
-                                           title="Guardar" id="btnguardar"
+                                        <button type="submit"
+                                           title="Guardar" id="btnguardar" 
                                            class="btn btn-success btn-label waves-effect waves-light">
                                             <i class="ri-save-line label-icon align-middle fs-16 me-2"></i> Guardar
                                         </button>
-                                        <button type="button"
-                                                title="Cancelar" id="btncancel"
+                                        <a type="button"
+                                           title="Cancelar" id="btncancel" href="@Url.Action("ConsultarF0004", "Configuracion")"
                                                 class="btn btn-danger btn-label waves-effect waves-light">
                                             <i class="ri-close-circle-line label-icon align-middle fs-16 me-2"></i> Cancelar
-                                        </button>
+                                        </a>
                                     </div>
                                 </div><!-- end col -->
                             </div><!-- end row -->
                         </div><!-- end col -->
                     </div><!-- end row -->
-                }
+                @* } *@
+                </form>
+                <script>
+                    // Example starter JavaScript for disabling
+                    // form submissions if there are invalid fields
+                    (function () {
+                        'use strict'
+                        var forms = document.querySelectorAll('.needs-validation')
+                        Array.prototype.slice.call(forms)
+                            .forEach(function (form) {
+                                form.addEventListener('submit', function (event) {
+                                    if (!form.checkValidity()) {
+                                        event.preventDefault()
+                                        event.stopPropagation()
+                                    }
+
+                                    form.classList.add('was-validated')
+                                }, false)
+                            })
+                    })()
+                </script>
             </div>
         </div>
     </div>

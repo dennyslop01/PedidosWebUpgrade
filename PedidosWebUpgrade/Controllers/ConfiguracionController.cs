@@ -19,6 +19,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         private readonly ConfigVariables _configVariables;
         private readonly IBrowserDetector _browserDetector;
         protected ICompositeViewEngine _viewEngine;
+        private int _idUsuario = 0;
 
         public ConfiguracionController(ConfigVariables configVariables, IBrowserDetector browserDetector, ICompositeViewEngine viewEngine)
         {
@@ -27,7 +28,25 @@ namespace PedidosWebUpgrade.Web.Controllers
             _viewEngine = viewEngine;
         }
 
-        [Authorize()]
+        private void ValidarSession()
+        {
+            try
+            {
+                ClaimsPrincipal principal = HttpContext.User;
+                if (principal.Identity != null)
+                {
+                    if (!principal.Identity.IsAuthenticated)
+                        RedirectToAction("IniciarSesion", "Login");
+                }
+                _idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
+            }
+            catch (Exception e)
+            {
+                CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory, "ConfiguracionController", "HttpGet-Sistema()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
+                RedirectToAction("IniciarSesion", "Login");
+            }
+        }
+
         [HttpGet()]
         public async Task<IActionResult> Sistema()
         {
@@ -36,7 +55,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             {
 
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/Sistema");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/Sistema");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -53,7 +72,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpPost]
         public async Task<IActionResult> Sistema(Sistema Modelo)
         {
@@ -63,7 +81,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/Sistema");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/Sistema");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -113,7 +131,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> ContadorPedidos()
         {
@@ -121,7 +138,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -136,7 +153,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> ConsultarUnContadorPedido(string CodigoPais, int Anno)
         {
@@ -144,7 +160,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -166,14 +182,13 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public async Task<IActionResult> ConsultarUnContadorPedido(ContadorPedidosPais Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ContadorPedidos");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -206,7 +221,6 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> CopiarContadores()
         {
@@ -215,7 +229,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/CopiarContadores");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/CopiarContadores");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -232,14 +246,13 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public async Task<IActionResult> CopiarContadores(ContadorPedidosPais Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/CopiarContadores");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/CopiarContadores");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -269,7 +282,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public JsonResult ObtenerContadorPais(int Anno, string CodigoPais)
         {
@@ -279,23 +291,15 @@ namespace PedidosWebUpgrade.Web.Controllers
             return Json(new { contador });
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> ConsultarF0004()
         {
-            ClaimsPrincipal principal = HttpContext.User;
-            if (principal.Identity != null)
-            {
-                if (!principal.Identity.IsAuthenticated)
-                    return RedirectToAction("IniciarSesion", "Login");
-            }
-
             List<F0004> Modelo = new List<F0004>();
             try
             {
-                int idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
+                ValidarSession();
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(idUsuario, "Configuracion/ConsultarF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -310,15 +314,15 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> DetalleF0004(string dtsy, string dtrt)
         {
             F0004 _Modelo = new F0004();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -338,15 +342,14 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public async Task<IActionResult> DetalleF0004(F0004 Modelo)
         {
-
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0004");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleF0004");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -369,27 +372,26 @@ namespace PedidosWebUpgrade.Web.Controllers
                 CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory,"ConfiguracionController", "HttpPost-DetalleF0004()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
             }
             ModelState.Clear();
-            return View(Modelo);
-
+            //return View(Modelo);
+            return RedirectToAction("ConsultarF0004", "Configuracion");
         }
 
-        [HttpPost()]
-        public JsonResult EliminarF0004(string dtsy, string dtrt)
+        [HttpGet()]
+        public async Task<IActionResult> EliminarF0004(string dtsy, string dtrt)
         {
             int _result = 0;
             try
             {
-                _result = new ConfiguracionRepository(_configVariables).EliminarF0004(dtsy, dtrt).Result;
+                _result = await new ConfiguracionRepository(_configVariables).EliminarF0004(dtsy, dtrt);
 
             }
             catch (Exception e)
             {
                 CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory,"ConfiguracionController", "HttpPost-EliminarF0004()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
             }
-            return Json(new { result = _result });
+            return RedirectToAction("ConsultarF0004", "Configuracion");
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> ConsultarF0005()
         {
@@ -398,7 +400,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarF0005");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -460,7 +462,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return Json(new { result = _result });
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> DetalleF0005(string drsy, string drrt, string drky)
         {
@@ -468,7 +469,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0005");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -488,14 +489,13 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public async Task<IActionResult> DetalleF0005(F0005 Modelo)
         {
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleF0005");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -537,7 +537,6 @@ namespace PedidosWebUpgrade.Web.Controllers
 
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> ConsultarPreferenciaAlmacenClientePais()
         {
@@ -546,7 +545,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarPreferenciaAlmacenClientePais");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarPreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -576,7 +575,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return Json(new { result = (_result == 1) });
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> DetallePreferenciaAlmacenClientePais(int IdPreferencia)
         {
@@ -584,7 +582,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetallePreferenciaAlmacenClientePais");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetallePreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -613,7 +611,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public async Task<IActionResult> DetallePreferenciaAlmacenClientePais(PreferenciaAlmacenClientePais preferenciaAlmacenClientePais)
         {
@@ -621,7 +618,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetallePreferenciaAlmacenClientePais");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetallePreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -702,7 +699,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return Json(new { descripcion });
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> ConsultarAgentesAduanales()
         {
@@ -711,7 +707,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/ConsultarAgentesAduanales");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarAgentesAduanales");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -727,7 +723,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(Modelo);
         }
 
-        [Authorize()]
         [HttpGet()]
         public async Task<IActionResult> DetalleAgenteAduanal(int AgentId)
         {
@@ -736,7 +731,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleAgenteAduanal");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleAgenteAduanal");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -754,7 +749,6 @@ namespace PedidosWebUpgrade.Web.Controllers
             return View(_Modelo);
         }
 
-        [Authorize()]
         [HttpPost()]
         public async Task<IActionResult> DetalleAgenteAduanal(ForwardingAgent forwardingAgent)
         {
@@ -762,7 +756,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Configuracion/DetalleAgenteAduanal");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleAgenteAduanal");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
