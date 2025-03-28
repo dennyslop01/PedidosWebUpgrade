@@ -1,0 +1,45 @@
+﻿@model List<PedidosWebUpgrade.Domain.Entities.F0005>
+
+
+@if (Model.Count > 0)
+{
+    <table id="alternative-pagination" class="table nowrap dt-responsive align-middle table-hover table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>CÓDIGO</th>
+                <th>DESCRIPCIÓN 01</th>
+                <th>DESCRIPCIÓN 02</th>
+                <th>USO ESPECIAL</th>
+                <th>ACCIONES</th>
+                <th hidden>drrt</th>
+                <th hidden>drrt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.drky</td>
+                    <td>@item.drdl01</td>
+                    <td>@item.drdl02</td>
+                    <td>@item.drsphd</td>
+                    <td>
+                        <div class="hstack gap-3 flex-wrap">
+                            <a href="@Url.Action("DetalleF0005","Configuracion", new { drsy = item.drsy , drrt = item.drrt , drky = item.drky })" class="link-success fs-15" data-authorization="authorization" data-crud="read" title="Ver registro" id="btnread">
+                                <i class="ri-edit-2-line"></i>
+                            </a>
+                            <a href="@Url.Action("EliminarF0005","Configuracion", new { drsy = item.drsy , drrt = item.drrt , drky = item.drky })"
+                               class="text-danger ml-1" onclick="return confirm('¿Está seguro que desea eliminar este registro?')"><i class="ri-delete-bin-line"></i></a>
+                        </div>
+                    </td>
+                    <td>@item.drrt</td>
+                    <td>@item.drsy</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="card card-body text-center"> NO EXISTEN REGISTROS QUE CONCIDAN CON LA BÚSQUEDA</p>
+}

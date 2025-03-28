@@ -53,7 +53,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             Sistema _Modelo = new Sistema();
             try
             {
-
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/Sistema");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -80,6 +80,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/Sistema");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -137,6 +138,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             List<ContadorPedidosPais> _Modelo = new List<ContadorPedidosPais>();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -159,6 +161,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             ContadorPedidosPais _Modelo = new ContadorPedidosPais();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -187,6 +190,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         {
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ContadorPedidos");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -228,6 +232,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             ContadorPedidosPais _Modelo = new ContadorPedidosPais();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/CopiarContadores");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -251,6 +256,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         {
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/CopiarContadores");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -399,6 +405,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -468,6 +475,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             F0005 _Modelo = new F0005();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -494,6 +502,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         {
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleF0005");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -506,7 +515,6 @@ namespace PedidosWebUpgrade.Web.Controllers
                 List<F0004> _F0004 = _ListaF0004.ToList();
                 if (_F0004.Count > 0)
                 {
-
                     var _resultQuery = await new ConfiguracionRepository(_configVariables).ActualizarF0005(Modelo);
                     if (_resultQuery > 0)
                     {
@@ -544,6 +552,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarPreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -581,6 +590,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             PrefeAlmClienPaisViewModel Modelo = new PrefeAlmClienPaisViewModel();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetallePreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -617,6 +627,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             PrefeAlmClienPaisViewModel _Modelo = new PrefeAlmClienPaisViewModel();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetallePreferenciaAlmacenClientePais");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -706,6 +717,7 @@ namespace PedidosWebUpgrade.Web.Controllers
 
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarAgentesAduanales");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -730,6 +742,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             ForwardingAgent _Modelo = new ForwardingAgent();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleAgenteAduanal");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
@@ -755,6 +768,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             ForwardingAgent _Modelo = new ForwardingAgent();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
                 List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/DetalleAgenteAduanal");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);

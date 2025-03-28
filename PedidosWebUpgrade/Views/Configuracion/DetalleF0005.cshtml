@@ -1,0 +1,134 @@
+﻿@{
+    @model PedidosWebUpgrade.Domain.Entities.F0005
+    ViewBag.Title = "Maestros";
+    ViewBag.pTitle = "Ficha F0005";
+    ViewBag.pageTitle = "Maestros";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box accordion-secondary" id="accordionBordered">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="accordionborderedExample1">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accor_borderedExamplecollapse1" aria-expanded="true" aria-controls="accor_borderedExamplecollapse1">
+                Datos básicos
+            </button>
+        </h2>
+        <div id="accor_borderedExamplecollapse1" class="accordion-collapse collapse show" aria-labelledby="accordionborderedExample1" data-bs-parent="#accordionBordered">
+            <div class="accordion-body">
+                <form class="row g-lg-3 needs-validation" novalidate asp-action="DetalleF0005" method="post">
+                    @* @using (Html.BeginForm("DetalleF0004", "Configuracion", FormMethod.Post, new { @class = "form-horizontal form-bordered" }))
+                { *@
+                    <div class="row">
+                        <div class="col-12 m-2">
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="drsy" class="form-label">Código del producto:</label>
+                                        <input type="text" class="form-control" asp-for="drsy" placeholder="Ingrese código del producto" required maxlength="5">
+                                        <section class="invalid-tooltip">
+                                            Código del producto requerido
+                                        </section>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="drrt" class="form-label">Código definido por el usuario:</label>
+                                        <input type="text" class="form-control" asp-for="drrt" placeholder="Ingrese código definido por usuario" required maxlength="5">
+                                        <section class="invalid-tooltip">
+                                            Código definido por el usuario requerido
+                                        </section>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="drky" class="form-label">Código:</label>
+                                        <input type="text" class="form-control" asp-for="drky" placeholder="Ingrese código" required maxlength="5">
+                                        <section class="invalid-tooltip">
+                                            Código requerido
+                                        </section>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="drdl01" class="form-label">Descripción 01:</label>
+                                        <textarea class="form-control" asp-for="drdl01" rows="3" placeholder="Ingrese descripción" required></textarea>
+                                        <section class="invalid-tooltip">
+                                            Descripción 01 requerido
+                                        </section>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="drdl02" class="form-label">Descripción 02:</label>
+                                        <textarea class="form-control" asp-for="drdl02" rows="3" placeholder="Ingrese descripción" required></textarea>
+                                        <section class="invalid-tooltip">
+                                            Descripción 02 requerido
+                                        </section>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                            <div class="row">
+                                <div class="col-lg-5 m-1">
+                                    <div>
+                                        <label asp-for="drsphd" class="form-label">Uso especial:</label>
+                                        <textarea class="form-control" asp-for="drsphd" rows="3" placeholder="Ingrese descripción" required></textarea>
+                                        <section class="invalid-tooltip">
+                                            Descripción uso especial requerido
+                                        </section>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                    <div class="row">
+                        <div class="col-12 m-2">
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    <div>
+                                        <button type="submit"
+                                                title="Guardar" id="btnguardar"
+                                                class="btn btn-success btn-label waves-effect waves-light">
+                                            <i class="ri-save-line label-icon align-middle fs-16 me-2"></i> Guardar
+                                        </button>
+                                        <a type="button"
+                                           title="Cancelar" id="btncancel" href="@Url.Action("ConsultarF0005", "Configuracion")"
+                                           class="btn btn-danger btn-label waves-effect waves-light">
+                                            <i class="ri-close-circle-line label-icon align-middle fs-16 me-2"></i> Cancelar
+                                        </a>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                    @* } *@
+                </form>
+                <script>
+                    // Example starter JavaScript for disabling
+                    // form submissions if there are invalid fields
+                    (function () {
+                        'use strict'
+                        var forms = document.querySelectorAll('.needs-validation')
+                        Array.prototype.slice.call(forms)
+                            .forEach(function (form) {
+                                form.addEventListener('submit', function (event) {
+                                    if (!form.checkValidity()) {
+                                        event.preventDefault()
+                                        event.stopPropagation()
+                                    }
+
+                                    form.classList.add('was-validated')
+                                }, false)
+                            })
+                    })()
+                </script>
+            </div>
+        </div>
+    </div>
+</div>

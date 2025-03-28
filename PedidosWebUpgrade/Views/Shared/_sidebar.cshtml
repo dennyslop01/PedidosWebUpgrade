@@ -82,8 +82,8 @@
                                                 @foreach (var childMenu in Model.Where(p => p.IdPadre == parentMenu.IdMenu).OrderBy(x => x.Orden))
                                                 {
                                                     <li>
-                                                        <a href="@Url.Content(childMenu.Url)" class="nav-link" data-key="t-one-page"> @childMenu.Descripcion </a>
-                                                    </li><br />
+                                                        <a href="@Url.Content(childMenu.Url)" class="nav-link" data-key="@childMenu.Descripcion"> @childMenu.Descripcion </a>
+                                                    </li>
                                                 }
                                             </ul>
                                         }
