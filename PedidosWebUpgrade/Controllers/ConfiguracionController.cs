@@ -432,6 +432,43 @@ namespace PedidosWebUpgrade.Web.Controllers
         }
 
         [HttpPost()]
+        public async Task<IActionResult> ConsultarF0005(string CodigoProducto, string CodigoUsuario)
+        {
+            ConsultarF0005ViewModel Modelo = new ConsultarF0005ViewModel();
+
+            try
+            {
+                ValidarSession();
+                //PERMISOS DE USUARIO
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Configuracion/ConsultarF0005");
+                TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
+                TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
+                TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
+                TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
+
+                //LLENADO DE  LISTAS
+                Modelo.Productos = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null).Result.Select(x => new ListaGeneral() { Codigo = x.dtsy, Descripcion = x.dtsy }).ToList();
+                Modelo.Productos.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
+
+                Modelo.CodigoUsuarios = new ConfiguracionRepository(_configVariables).ObtenerF0004(null, null).Result.Select(x => new ListaGeneral() { Codigo = x.dtrt, Descripcion = x.dtrt }).ToList();
+                Modelo.CodigoUsuarios.Insert(0, new ListaGeneral { Codigo = "", Descripcion = "SELECCIONE" });
+
+                if(!string.IsNullOrEmpty(CodigoProducto) || !string.IsNullOrEmpty(CodigoUsuario))
+                    Modelo.ListF0005 = await new ConfiguracionRepository(_configVariables).ObtenerF0005(CodigoProducto, CodigoUsuario, null);
+
+                //GUARDAR LOS VALORES DE BUSQUEDA
+                Modelo.CodigoProducto = CodigoProducto;
+                Modelo.CodigoUsuario = CodigoUsuario;
+            }
+            catch (Exception e)
+            {
+                CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory, "ConfiguracionController", "HttpGet-ConsultarF0005()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
+            }
+            return View(Modelo);
+        }
+
+
+        [HttpPost()]
         public async Task<IActionResult> BuscarF0005(string CodigoProducto, string CodigoUsuario)
         {
             List<F0005> _ListF0005 = new List<F0005>();
@@ -533,16 +570,14 @@ namespace PedidosWebUpgrade.Web.Controllers
                     ModelState.AddModelError(string.Empty, "Los códigos de producto y de usuario no existen.");
                 }
 
-
-
             }
             catch (Exception e)
             {
                 CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory,"ConfiguracionController", "HttpPost-DetalleF0005()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
             }
             //ModelState.Clear();
-            return View(Modelo);
-
+            //return View(Modelo);
+            return RedirectToAction("ConsultarF0005", "Configuracion");
         }
 
         [HttpGet()]
