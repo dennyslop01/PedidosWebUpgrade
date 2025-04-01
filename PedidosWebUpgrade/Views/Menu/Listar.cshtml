@@ -1,0 +1,62 @@
+﻿@{
+    @model List<PedidosWebUpgrade.Domain.Entities.Menu>
+    ViewBag.Title = "Menú";
+    ViewBag.pTitle = "Opciones de menú";
+    ViewBag.pageTitle = "Menú";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@* @section styles {
+} *@
+@Html.Partial("~/Views/Shared/_complement_css.cshtml")
+
+<div class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box accordion-secondary" id="accordionBordered">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="accordionborderedExample1">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accor_borderedExamplecollapse1" aria-expanded="true" aria-controls="accor_borderedExamplecollapse1">
+                Opciones de menú
+            </button>
+        </h2>
+        <div id="accor_borderedExamplecollapse1" class="accordion-collapse collapse show" aria-labelledby="accordionborderedExample1" data-bs-parent="#accordionBordered">
+            <div class="accordion-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-lg-8">
+                            </div><!-- end col -->
+                            <div class="col-lg-2">
+                            </div><!-- end col -->
+                            <div class="col-lg-2">
+                                <div class="card card-body text-end">
+                                   @*  <a type="button" href="@Url.Action("DetalleF0004","Configuracion", new { dtsy = "" , dtrt = ""})"
+                                       title="Nuevo" id="btncreate" data-authorization="authorization" data-crud="create"
+                                       class="btn btn-secondary btn-label waves-effect waves-light">
+                                        <i class="ri-file-line label-icon align-middle fs-16 me-2"></i> Nuevo
+                                    </a> *@
+                                </div>
+                            </div><!-- end col -->
+                        </div><!-- end row -->
+                    </div><!-- end col -->
+                </div><!-- end row -->
+                @if (Model.Count > 0)
+                {
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                </div>
+                                <div class="card-body">
+                                    <p class="card card-body text-center"> NO EXISTEN REGISTROS QUE CONCIDAN CON LA BÚSQUEDA</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* @section scripts {
+} *@
+@Html.Partial("~/Views/Shared/_complement_script.cshtml")
+

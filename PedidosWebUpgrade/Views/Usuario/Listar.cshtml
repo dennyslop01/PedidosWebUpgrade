@@ -1,45 +1,93 @@
 ﻿@{
-    ViewBag.Title = "Maestros";
+    @model List<PedidosWebUpgrade.Domain.Entities.Usuario>
+    ViewBag.Title = "Usuarios";
     ViewBag.pTitle = "Listado usuarios";
-    ViewBag.pageTitle = "Maestros";
+    ViewBag.pageTitle = "Usuarios";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@section styles {
-    <!--datatable css-->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
-    <!--datatable responsive css-->
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
-}
+@* @section styles {
+} *@
+@Html.Partial("~/Views/Shared/_complement_css.cshtml")
 
 <div class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box accordion-secondary" id="accordionBordered">
     <div class="accordion-item">
         <h2 class="accordion-header" id="accordionborderedExample1">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accor_borderedExamplecollapse1" aria-expanded="true" aria-controls="accor_borderedExamplecollapse1">
-                Códigos F0004 Registrados
+                Usuarios Registrados
             </button>
         </h2>
         <div id="accor_borderedExamplecollapse1" class="accordion-collapse collapse show" aria-labelledby="accordionborderedExample1" data-bs-parent="#accordionBordered">
             <div class="accordion-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-lg-8">
+                            </div><!-- end col -->
+                            <div class="col-lg-2">
+                            </div><!-- end col -->
+                            <div class="col-lg-2">
+                                <div class="card card-body text-end">
+                                    <a type="button" href="@Url.Action("Detalle","Usuario", new { dtsy = "" , dtrt = ""})"
+                                       title="Nuevo" id="btncreate" data-authorization="authorization" data-crud="create"
+                                       class="btn btn-secondary btn-label waves-effect waves-light">
+                                        <i class="ri-file-line label-icon align-middle fs-16 me-2"></i> Nuevo
+                                    </a>
+                                </div>
+                            </div><!-- end col -->
+                        </div><!-- end row -->
+                    </div><!-- end col -->
+                </div><!-- end row -->
+                @if (Model.Count > 0)
+                {
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                </div>
+                                <div class="card-body">
+                                    <table id="alternative-pagination" class="table nowrap dt-responsive align-middle table-hover table-bordered" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>LOGIN</th>
+                                                <th>NOMBRE</th>
+                                                <th>APELLIDO</th>
+                                                <th>TELEFONO</th>
+                                                <th>ACCIONES</th>
+                                                <th hidden>ID</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@item.Login</td>
+                                                    <td>@item.PrimerNombre @item.SegundoNombre</td>
+                                                    <td>@item.PrimerApellido @item.SegundoApellido</td>
+                                                    <td>@item.Telefono</td>
+                                                    <td>
+                                                        <div class="hstack gap-3 flex-wrap">
+                                                            <a href="@Url.Action("Detalle","Usuario", new { IdUser = item.IdUsuario })" class="link-success fs-15" data-authorization="authorization" data-crud="read" title="Ver registro" id="btnread">
+                                                                <i class="ri-edit-2-line"></i>
+                                                            </a>
+                                                            <a href="@Url.Action("Eliminar","Usuario", new { IdUser = item.IdUsuario })"
+                                                               class="text-danger ml-1" onclick="return confirm('¿Está seguro que desea eliminar este registro?')"><i class="ri-delete-bin-line"></i></a>
+                                                        </div>
+                                                    </td>
+                                                    <td hidden>@item.IdUsuario</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
-@section scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-    <!--datatable js-->
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-
-    <script src="~/assets/js/pages/datatables.init.js"></script>
-
-}
+@* @section scripts {
+} *@
+@Html.Partial("~/Views/Shared/_complement_script.cshtml")

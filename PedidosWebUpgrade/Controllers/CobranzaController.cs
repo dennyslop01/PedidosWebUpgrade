@@ -9,6 +9,7 @@ using PedidosWebUpgrade.Domain.ViewModels;
 using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
+using System.Security.Claims;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -18,6 +19,7 @@ namespace PedidosWebUpgrade.Web.Controllers
         private readonly ConfigVariables _configVariables;
         private readonly IBrowserDetector _browserDetector;
         protected ICompositeViewEngine _viewEngine;
+        private int _idUsuario = 0;
 
         public CobranzaController(ConfigVariables configVariables, IBrowserDetector browserDetector, ICompositeViewEngine viewEngine)
         {
@@ -25,7 +27,25 @@ namespace PedidosWebUpgrade.Web.Controllers
             _browserDetector = browserDetector;
             _viewEngine = viewEngine;
         }
-        
+        private void ValidarSession()
+        {
+            try
+            {
+                ClaimsPrincipal principal = HttpContext.User;
+                if (principal.Identity != null)
+                {
+                    if (!principal.Identity.IsAuthenticated)
+                        RedirectToAction("IniciarSesion", "Login");
+                }
+                _idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
+            }
+            catch (Exception e)
+            {
+                CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory, "ConfiguracionController", "HttpGet-Sistema()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
+                RedirectToAction("IniciarSesion", "Login");
+            }
+        }
+
         [HttpGet()]
         public async Task<IActionResult> EstadoCuenta()
         {
@@ -34,7 +54,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             try
             {
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cobranza/EstadoCuenta");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Cobranza/EstadoCuenta");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -119,7 +139,7 @@ namespace PedidosWebUpgrade.Web.Controllers
             {
 
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Cobranza/CobrarDocumento");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Cobranza/CobrarDocumento");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);

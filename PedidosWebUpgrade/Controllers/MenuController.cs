@@ -6,6 +6,7 @@ using PedidosWebUpgrade.Infrastructure.Repository;
 using PedidosWebUpgrade.Infrastructure.Utilities;
 using Shyjus.BrowserDetection;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 
 namespace PedidosWebUpgrade.Web.Controllers
 {
@@ -14,6 +15,7 @@ namespace PedidosWebUpgrade.Web.Controllers
     {
         private readonly ConfigVariables _configVariables;
         private readonly IBrowserDetector _browserDetector;
+        private int _idUsuario = 0;
 
         public MenuController(ConfigVariables configVariables, IBrowserDetector browserDetector)
         {
@@ -21,11 +23,24 @@ namespace PedidosWebUpgrade.Web.Controllers
             _browserDetector = browserDetector;
         }
 
-        //[ChildActionOnly]
-        //public async Task<IActionResult> MenuPrincipal()
-        //{
-            
-        //}
+        private void ValidarSession()
+        {
+            try
+            {
+                ClaimsPrincipal principal = HttpContext.User;
+                if (principal.Identity != null)
+                {
+                    if (!principal.Identity.IsAuthenticated)
+                        RedirectToAction("IniciarSesion", "Login");
+                }
+                _idUsuario = int.Parse(principal.FindFirst(ClaimTypes.UserData).Value);
+            }
+            catch (Exception e)
+            {
+                CustomUtility.RegistrarExcepcion(_configVariables.LogDirectory, "ConfiguracionController", "HttpGet-Sistema()", e.ToString(), _browserDetector.Browser.Name, _browserDetector.Browser.Version);
+                RedirectToAction("IniciarSesion", "Login");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> Listar()
@@ -33,14 +48,15 @@ namespace PedidosWebUpgrade.Web.Controllers
             List<Menu> Modelo = new List<Menu>();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Listar");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Menu/Listar");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
                 TempData["eliminar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeEliminar);
 
-                Modelo = await new MenuRepository(_configVariables).ObtenerMenu(0);
+                //Modelo = await new MenuRepository(_configVariables).ObtenerMenu(0);
             }
             catch (Exception e)
             {
@@ -71,8 +87,9 @@ namespace PedidosWebUpgrade.Web.Controllers
             Menu _Modelo = new Menu();
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Menu/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
@@ -105,8 +122,9 @@ namespace PedidosWebUpgrade.Web.Controllers
             string _msj = string.Empty;
             try
             {
+                ValidarSession();
                 //PERMISOS DE USUARIO
-                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(int.Parse(HttpContext.Session.GetString("idusuario")), "Menu/Detalle");
+                List<Menu> _Permisos = await new UsuarioRepository(_configVariables).ObtenerPermisos(_idUsuario, "Menu/Detalle");
                 TempData["crear"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeCrear);
                 TempData["consultar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeConsultar);
                 TempData["actualizar"] = Convert.ToInt32(_Permisos.FirstOrDefault().PuedeActualizar);
